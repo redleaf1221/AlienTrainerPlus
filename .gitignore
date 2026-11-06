@@ -1,0 +1,4 @@
+.urk/
+cmake-build-release/
+cmake-build-relwithdebinfo/
+.idea/

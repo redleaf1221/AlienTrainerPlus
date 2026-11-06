@@ -1,0 +1,6 @@
+CompileFlags:
+  CompilationDatabase: out/build/clang-relwithdebinfo
+  Compiler: clang++
+
+Index:
+  Background: Build

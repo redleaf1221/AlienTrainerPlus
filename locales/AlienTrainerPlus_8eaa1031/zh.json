@@ -1,0 +1,20 @@
+{
+  "about.title": "关于",
+  "about.default_description": "这是此MOD的小型运行时菜单。",
+  "about.author": "作者", "about.version": "版本", "about.url": "URL",
+  "about.project_url": "项目URL", "about.social": "社交", "about.github": "GitHub",
+  "menu.about": "关于", "menu.config": "设置",
+  "config.controls": "控制",
+  "config.show_menu": "显示菜单", "config.toggle_key": "菜单按键", "config.language": "语言",
+  "config.detached_viewports": "分离窗口",
+  "config.localization": "本地化", "config.enable_localization": "启用本地化",
+  "widget.enabled": "已启用", "widget.disabled": "已禁用",
+  "example.key_code": "按键代码: {code}",
+  "menu.hint": "{name}: 按 {key} 打开菜单",
+  "menu.trainer": "修改器",
+  "trainer.section.wordtest": "词语测试",
+  "trainer.wordtest": "官方译名",
+  "trainer.wordtest.hint": "在屏幕上显示每个外星词的官方翻译。",
+  "trainer.hotkey": "热键",
+  "trainer.hotkey.disabled": "已禁用"
+}
