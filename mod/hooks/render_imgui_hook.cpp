@@ -17,17 +17,15 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-#include <cstdio>
-#include <cstring>
 #include <cwchar>
 #include <d3d11.h>
 #include <d3d12.h>
 #include <deque>
-#include <iterator>
 #include <dxgi.h>
 #include <dxgi1_4.h>
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <iterator>
 #include <limits>
 #include <mutex>
 #include <vector>
@@ -44,8 +42,8 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT mes
 #pragma warning(pop)
 #endif
 
-#include "dx11_viewport_swap_chain.h"
 #include "dx11_state_guard.h"
+#include "dx11_viewport_swap_chain.h"
 #include "dx12_overlay_resources.h"
 #include "dxgi_hook_discovery.h"
 #include "sdk/hook_api.h"
@@ -336,8 +334,8 @@ inline bool is_imgui_viewport_window(HWND hwnd) {
     return length > 0 && std::wcscmp(class_name, L"ImGui Platform") == 0;
 }
 
-// Viewport class atoms are keyed on (name, module); the backend is built per DLL
-// so mods don't share one. Logged once to catch regressions.
+// Viewport class atoms are keyed on (name, module); the backend is built per
+// DLL so mods don't share one. Logged once to catch regressions.
 inline void log_viewport_class_ownership() {
     static bool logged = false;
     if (logged)
@@ -351,7 +349,8 @@ inline void log_viewport_class_ownership() {
     existing.cbSize = sizeof(existing);
     const bool owned = self != nullptr && GetClassInfoExW(self, L"ImGui Platform", &existing) != FALSE;
     log(owned ? "Detached viewport window class is owned by this module."
-              : "Detached viewport window class is not owned by this module; viewport windows would be "
+              : "Detached viewport window class is not owned by this module; "
+                "viewport windows would be "
                 "dispatched by another mod's ImGui.");
 }
 
@@ -359,7 +358,8 @@ inline bool is_process_main_window(HWND hwnd) {
     if (!hwnd || !IsWindow(hwnd) || GetAncestor(hwnd, GA_ROOT) != hwnd || GetWindow(hwnd, GW_OWNER) != nullptr) {
         return false;
     }
-    // Several ImGui contexts can coexist; don't adopt another mod's viewport swap chain.
+    // Several ImGui contexts can coexist; don't adopt another mod's viewport swap
+    // chain.
     if (is_imgui_viewport_window(hwnd))
         return false;
     DWORD process_id = 0;
@@ -392,8 +392,7 @@ inline bool is_active_game_swap_chain(IDXGISwapChain *swap_chain) {
 
     // Cheap Win32 marker check before the COM identity queries.
     DXGI_SWAP_CHAIN_DESC desc{};
-    if (query_swap_chain_desc(swap_chain, &desc) && desc.OutputWindow &&
-        is_imgui_viewport_window(desc.OutputWindow))
+    if (query_swap_chain_desc(swap_chain, &desc) && desc.OutputWindow && is_imgui_viewport_window(desc.OutputWindow))
         return false;
     return same_com_identity(swap_chain, g_active_swap_chain);
 }
@@ -507,15 +506,15 @@ inline void validate_platform_window_topology() {
     char text[320]{};
     std::snprintf(text, sizeof(text),
                   "Detached viewport topology: hwnd=%p owner=%p windowThread=%lu "
-                  "renderThread=%lu gameWindowThread=%lu ownerless=%s threadOwned=%s noActivate=%s "
+                  "renderThread=%lu gameWindowThread=%lu ownerless=%s "
+                  "threadOwned=%s noActivate=%s "
                   "taskbarHidden=%s.",
                   static_cast<void *>(window), static_cast<void *>(topology.owner),
                   static_cast<unsigned long>(topology.windowThread), static_cast<unsigned long>(renderThread),
                   static_cast<unsigned long>(g_hwnd ? GetWindowThreadProcessId(g_hwnd, nullptr) : 0),
                   !topology.owner ? "yes" : "no", topology.windowThread == renderThread ? "yes" : "no",
                   (topology.extendedStyle & WS_EX_NOACTIVATE) != 0 ? "yes" : "no",
-                  (topology.extendedStyle & WS_EX_TOOLWINDOW) != 0 &&
-                          (topology.extendedStyle & WS_EX_APPWINDOW) == 0
+                  (topology.extendedStyle & WS_EX_TOOLWINDOW) != 0 && (topology.extendedStyle & WS_EX_APPWINDOW) == 0
                       ? "yes"
                       : "no");
     log(text);
@@ -710,7 +709,8 @@ inline bool game_window_on_present_thread() {
 inline void log_detached_viewport_parenting() {
     char text[224]{};
     std::snprintf(text, sizeof(text),
-                  "Detached viewports enabled: gameWindowThread=%lu presentThread=%lu parenting=%s.",
+                  "Detached viewports enabled: gameWindowThread=%lu "
+                  "presentThread=%lu parenting=%s.",
                   static_cast<unsigned long>(g_hwnd ? GetWindowThreadProcessId(g_hwnd, nullptr) : 0),
                   static_cast<unsigned long>(GetCurrentThreadId()),
                   game_window_on_present_thread() ? "owned-by-game-window" : "ownerless-topmost");
@@ -874,7 +874,7 @@ inline UINT mouse_button_message(int button, bool down) {
 inline LPARAM keyboard_transition_lparam(LPARAM source, bool down) {
     constexpr std::uintptr_t metadata_mask = 0x21ff0000u;
     constexpr std::uintptr_t released_mask = 0xc0000000u;
-    const std::uintptr_t source_bits = static_cast<std::uintptr_t>(source);
+    const auto source_bits = static_cast<std::uintptr_t>(source);
     return static_cast<LPARAM>((source_bits & metadata_mask) | 1u | (down ? 0u : released_mask));
 }
 
@@ -955,10 +955,7 @@ inline void clear_game_input() {
 }
 
 inline bool any_window_mouse_button_down() {
-    for (bool down : g_wndproc_mouse_down)
-        if (down)
-            return true;
-    return false;
+    return std::ranges::any_of(g_wndproc_mouse_down, [](bool down) { return down; });
 }
 
 inline void queue_input_event(const InputEvent &event) {
@@ -1054,6 +1051,7 @@ inline void poll_window_mouse_state(HWND hwnd) {
 }
 
 inline void apply_window_input_transition(HWND hwnd, WNDPROC old_wndproc, bool open) {
+    (void)old_wndproc;
     if (g_menu_input_open == open) {
         g_menu_visible.store(open, std::memory_order_release);
         g_menu_input_applied.store(open ? 1 : 0, std::memory_order_release);
@@ -1324,10 +1322,12 @@ inline void sync_menu_state() {
 // backends register at init; config just flips the flag ImGui reads per frame
 inline void sync_detached_viewports() {
     if (!g_platform_renderer_callbacks.installed) {
-        // OpenGL never registers viewport callbacks; report instead of silently ignoring.
+        // OpenGL never registers viewport callbacks; report instead of silently
+        // ignoring.
         if (ModConfig::enable_detached_viewports && !g_detached_viewport_unsupported_logged) {
             g_detached_viewport_unsupported_logged = true;
-            log("Detached viewports are not supported by the active graphics backend; the "
+            log("Detached viewports are not supported by the active graphics "
+                "backend; the "
                 "configuration toggle has no effect.");
         }
         return;
@@ -1345,7 +1345,8 @@ inline void sync_detached_viewports() {
     g_platform_windows.clear();
     g_platform_window_policy.reset();
     g_platform_window_topology_logged = false;
-    log("Detached viewports disabled by configuration; windows merge back into the game window.");
+    log("Detached viewports disabled by configuration; windows merge back into "
+        "the game window.");
 }
 
 inline void shutdown_imgui() {
@@ -1428,7 +1429,7 @@ inline bool queue_raw_mouse_input(HWND hwnd, LPARAM lparam) {
     RAWINPUTHEADER header{};
     UINT header_size = sizeof(header);
     if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lparam), RID_HEADER, &header, &header_size,
-                        sizeof(RAWINPUTHEADER)) == UINT(-1)) {
+                        sizeof(RAWINPUTHEADER)) == static_cast<UINT>(-1)) {
         log_cursor_error("GetRawInputData(header)");
         return false;
     }
@@ -1438,7 +1439,7 @@ inline bool queue_raw_mouse_input(HWND hwnd, LPARAM lparam) {
     RAWINPUT input{};
     UINT input_size = sizeof(input);
     if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lparam), RID_INPUT, &input, &input_size, sizeof(RAWINPUTHEADER)) ==
-        UINT(-1)) {
+        static_cast<UINT>(-1)) {
         log_cursor_error("GetRawInputData(mouse)");
         return false;
     }
@@ -1514,10 +1515,10 @@ inline LRESULT CALLBACK wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM l
     if (g_broker_callback_active)
         g_broker_callback_handled = false;
     WNDPROC old_wndproc = g_old_wndproc;
-    InputRelay relayed_input{};
     const UINT relay_message = input_relay_message();
     const bool relayed = relay_message && message == relay_message;
     if (relayed) {
+        InputRelay relayed_input{};
         const auto *input = reinterpret_cast<const InputRelay *>(lparam);
         if (!readable_range(input, sizeof(*input))) {
             log("Received an invalid ImGui input relay payload.");
@@ -1720,8 +1721,8 @@ inline bool init_dx11_imgui(IDXGISwapChain *swap_chain) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange | ImGuiConfigFlags_DockingEnable |
-                      ImGuiConfigFlags_ViewportsEnable;
+    io.ConfigFlags |=
+        ImGuiConfigFlags_NoMouseCursorChange | ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
     // owned by the game window only when that window lives on this thread
     io.ConfigViewportsNoDefaultParent = !game_window_on_present_thread();
     log_detached_viewport_parenting();
@@ -1826,8 +1827,8 @@ inline bool init_dx12_imgui(IDXGISwapChain *swap_chain) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange | ImGuiConfigFlags_DockingEnable |
-                      ImGuiConfigFlags_ViewportsEnable;
+    io.ConfigFlags |=
+        ImGuiConfigFlags_NoMouseCursorChange | ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
     io.ConfigViewportsNoDefaultParent = !game_window_on_present_thread();
     log_detached_viewport_parenting();
     ModUI::initialize_style();
@@ -1887,10 +1888,12 @@ inline bool init_imgui(IDXGISwapChain *swap_chain) {
     if (!first_present_logged.exchange(true))
         log("First Present reached the UI hook.");
     DXGI_SWAP_CHAIN_DESC desc{};
-    if (!query_swap_chain_desc(swap_chain, &desc) || (desc.OutputWindow && !is_process_main_window(desc.OutputWindow))) {
+    if (!query_swap_chain_desc(swap_chain, &desc) ||
+        (desc.OutputWindow && !is_process_main_window(desc.OutputWindow))) {
         static std::atomic<bool> skipped_logged{false};
         if (!skipped_logged.exchange(true))
-            log("Present skipped: its swap chain does not draw to this process's main window.");
+            log("Present skipped: its swap chain does not draw to this process's "
+                "main window.");
         return false;
     }
     ID3D11Device *dx11_device = nullptr;
@@ -1925,12 +1928,13 @@ inline void report_viewport_cost() {
     }
     if (g_viewport_cost.frames == 0 || now - g_viewport_cost_tick < 5000)
         return;
-    const double frames = static_cast<double>(g_viewport_cost.frames);
-    const double total = g_viewport_cost.update + g_viewport_cost.policy + g_viewport_cost.pump +
-                         g_viewport_cost.present;
+    const auto frames = static_cast<double>(g_viewport_cost.frames);
+    const double total =
+        g_viewport_cost.update + g_viewport_cost.policy + g_viewport_cost.pump + g_viewport_cost.present;
     char text[320]{};
     std::snprintf(text, sizeof(text),
-                  "Detached viewport cost over %u frames (viewports=%zu, messages=%u): update=%.3f policy=%.3f "
+                  "Detached viewport cost over %u frames (viewports=%zu, "
+                  "messages=%u): update=%.3f policy=%.3f "
                   "pump=%.3f present=%.3f avg-total=%.3f worst-total=%.3f ms.",
                   g_viewport_cost.frames, g_viewport_cost.viewports, g_viewport_cost.dispatched,
                   g_viewport_cost.update / frames, g_viewport_cost.policy / frames, g_viewport_cost.pump / frames,
@@ -1996,7 +2000,8 @@ inline void render_dx12_frame(IDXGISwapChain *swap_chain) {
         if (now - g_dx12_busy_diagnostic_tick >= 5000) {
             char text[192]{};
             std::snprintf(text, sizeof(text),
-                          "DX12 overlay skipped %llu frame(s) while its command allocator was still in GPU use; "
+                          "DX12 overlay skipped %llu frame(s) while its command "
+                          "allocator was still in GPU use; "
                           "the game render thread was not blocked.",
                           static_cast<unsigned long long>(g_dx12_busy_frame_skips));
             log(text);
@@ -2036,14 +2041,16 @@ inline void render_dx12_frame(IDXGISwapChain *swap_chain) {
     barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
     submission.commandList->ResourceBarrier(1, &barrier);
     if (!g_dx12_resources.submit_frame(submission)) {
-        log("DX12 overlay command submission failed; UI frame synchronization is unavailable.");
+        log("DX12 overlay command submission failed; UI frame synchronization is "
+            "unavailable.");
         // Early return after NewFrame(): still close the platform-window update.
         render_platform_windows();
         return;
     }
     render_platform_windows();
     if (!g_dx12_resources.complete_frame(submission))
-        log("DX12 overlay completion fence failed; frame resources will not be reused.");
+        log("DX12 overlay completion fence failed; frame resources will not be "
+            "reused.");
 }
 
 inline void render_frame(IDXGISwapChain *swap_chain) {
@@ -2103,7 +2110,7 @@ inline HRESULT __stdcall detour_present(IDXGISwapChain *swap_chain, UINT sync_in
             if (depth)
                 --(*depth);
         }
-        bool reentrant() const {
+        [[nodiscard]] bool reentrant() const {
             return depth && *depth > 1;
         }
     };
@@ -2138,7 +2145,7 @@ inline HRESULT __stdcall detour_present1(IDXGISwapChain1 *swap_chain, UINT sync_
             if (depth)
                 --(*depth);
         }
-        bool reentrant() const {
+        [[nodiscard]] bool reentrant() const {
             return depth && *depth > 1;
         }
     };
@@ -2176,7 +2183,8 @@ inline HRESULT __stdcall detour_resize_buffers(IDXGISwapChain *swap_chain, UINT 
     }
     if (g_backend == GraphicsBackend::dx12 && !g_dx12_resources.wait_for_idle()) {
         // never fail the game's resize; release clears the lost fence state
-        log("DX12 overlay GPU work could not be drained before ResizeBuffers; overlay resources are "
+        log("DX12 overlay GPU work could not be drained before ResizeBuffers; "
+            "overlay resources are "
             "released and rebuilt on the next Present.");
     }
     if (g_imgui_ready && g_backend == GraphicsBackend::dx11)
@@ -2207,9 +2215,10 @@ inline HRESULT __stdcall detour_resize_buffers(IDXGISwapChain *swap_chain, UINT 
                 "retrying on next Present.");
         }
     } else if (FAILED(result)) {
-        log(g_backend == GraphicsBackend::dx12
-                ? "DX12 ResizeBuffers failed; UI resources will be recreated on the next successful resize."
-                : "DX11 ResizeBuffers failed; UI render target will be recreated on the next Present.");
+        log(g_backend == GraphicsBackend::dx12 ? "DX12 ResizeBuffers failed; UI resources will be recreated on "
+                                                 "the next successful resize."
+                                               : "DX11 ResizeBuffers failed; UI render target will be recreated "
+                                                 "on the next Present.");
     }
     return result;
 }
@@ -2347,7 +2356,8 @@ inline bool install() {
         DxgiVTableTargets discovered = discover_dxgi_hook_targets(want_dx12, &log);
         if (!complete(discovered) && want_dx12 && want_dx11) {
             // DX12 probe found no vtable; DX11 games still need one
-            log("DX12 DXGI probe produced no usable swap-chain targets; retrying with a "
+            log("DX12 DXGI probe produced no usable swap-chain targets; retrying "
+                "with a "
                 "DX11 probe.");
             discovered = discover_dxgi_hook_targets(false, &log);
         }
@@ -2384,7 +2394,8 @@ inline bool install() {
         const bool wanted_present = targets.present != nullptr;
         const bool wanted_present1 = targets.present1 && targets.present1 != targets.present;
         if ((wanted_present && !g_present_hooked) || (wanted_present1 && !g_present1_hooked)) {
-            log("DXGI presentation hooks installed only partially; unwinding for a full retry.");
+            log("DXGI presentation hooks installed only partially; unwinding for a "
+                "full retry.");
             if (g_present1_hooked) {
                 URK::hooks::detach_ex(reinterpret_cast<void **>(&g_present1),
                                       reinterpret_cast<void *>(&detour_present1));
@@ -2469,8 +2480,7 @@ inline bool install() {
     }
 
     if (want_opengl) {
-        HMODULE opengl32 = GetModuleHandleA("opengl32.dll");
-        if (opengl32) {
+        if (HMODULE opengl32 = GetModuleHandleA("opengl32.dll")) {
             g_wgl_swap_buffers = reinterpret_cast<WglSwapBuffersFn>(GetProcAddress(opengl32, "wglSwapBuffers"));
             if (g_wgl_swap_buffers &&
                 URK::hooks::attach_ex(reinterpret_cast<void **>(&g_wgl_swap_buffers),

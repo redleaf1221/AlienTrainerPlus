@@ -1,6 +1,5 @@
 #pragma once
 #include "config/mod_config.h"
-#include <cstdio>
 #include <imgui.h>
 #include <string>
 #include <vector>

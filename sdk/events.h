@@ -59,7 +59,7 @@ template <class... Args> class Signal {
             compact();
     }
 
-    bool empty() const {
+    [[nodiscard]] bool empty() const {
         return std::none_of(slots_.begin(), slots_.end(), [](const Slot &slot) { return slot.active; });
     }
 

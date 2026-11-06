@@ -6,7 +6,6 @@
 #include <Windows.h>
 
 #include <algorithm>
-#include <cctype>
 #include <filesystem>
 #include <fstream>
 #include <initializer_list>
@@ -147,8 +146,7 @@ inline bool parse_string(const std::string &source, size_t &pos, std::string &ou
             error = "unterminated JSON escape";
             return false;
         }
-        const char escape = source[pos++];
-        switch (escape) {
+        switch (source[pos++]) {
             case '"':
                 output.push_back('"');
                 break;
@@ -231,7 +229,7 @@ inline bool parse_dictionary(const std::string &source, Dictionary &output, std:
         }
         skip_whitespace(source, pos);
         if (!parse_string(source, pos, value, error)) {
-            error = "all localization values must be strings: " + error;
+            error.insert(0, "all localization values must be strings: ");
             return false;
         }
         output[std::move(key)] = std::move(value);
@@ -260,7 +258,7 @@ inline bool parse_dictionary(const std::string &source, Dictionary &output, std:
 
 inline std::filesystem::path locale_directory() {
     HMODULE module = nullptr;
-    const DWORD flags = GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT;
+    constexpr DWORD flags = GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT;
     if (!GetModuleHandleExW(flags, reinterpret_cast<LPCWSTR>(&locale_directory), &module)) {
         report_error("cannot resolve the mod DLL path");
         return {};
@@ -323,13 +321,12 @@ inline void initialize() {
         fallback_language() = "en";
         fallback_table() = compiled_english();
         current_language() = "en";
-        languages().push_back("en");
+        languages().emplace_back("en");
         return;
     }
 
-    const char *configured = ModConfig::default_language && ModConfig::default_language[0]
-                                 ? ModConfig::default_language
-                                 : "en";
+    const char *configured =
+        ModConfig::default_language && ModConfig::default_language[0] ? ModConfig::default_language : "en";
     fallback_language() = configured;
 
     const std::filesystem::path directory = locale_directory();
@@ -372,8 +369,8 @@ inline void initialize() {
             fallback_table() = std::move(parsed);
         languages().push_back(language);
     }
-    std::sort(languages().begin(), languages().end());
-    languages().erase(std::unique(languages().begin(), languages().end()), languages().end());
+    std::ranges::sort(languages());
+    languages().erase(std::ranges::unique(languages()).begin(), languages().end());
     if (languages().empty())
         languages().push_back(fallback_language());
 

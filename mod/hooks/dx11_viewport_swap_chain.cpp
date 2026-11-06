@@ -33,7 +33,8 @@ namespace {
     }
 }
 
-// Flip-model rejects sRGB back buffers; the game gets that color space from its RTV.
+// Flip-model rejects sRGB back buffers; the game gets that color space from its
+// RTV.
 [[nodiscard]] DXGI_FORMAT flip_model_format(DXGI_FORMAT format) {
     switch (format) {
         case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:

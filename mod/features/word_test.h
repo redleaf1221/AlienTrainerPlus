@@ -19,7 +19,8 @@ bool enabled();
 /// Leaves the previous state untouched when the game write fails.
 void set_enabled(bool value);
 
-/// Re-applies the current state (used after a scene load spawns new characters).
+/// Re-applies the current state (used after a scene load spawns new
+/// characters).
 void refresh();
 
 /// One-time setup; logs the hotkey so it shows up in URKit_logs.log.
@@ -28,6 +29,7 @@ void initialize();
 /// Main-thread tick: edge-detects F9.
 void update();
 
-/// Scene hook: clears Global.isDemo when a demo build is running, then refreshes.
+/// Scene hook: clears Global.isDemo when a demo build is running, then
+/// refreshes.
 void on_scene_loaded();
 } // namespace WordTest

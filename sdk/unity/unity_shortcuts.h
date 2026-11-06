@@ -13,7 +13,7 @@ inline void LogWarning(std::string_view message) {
 inline void LogError(std::string_view message) {
     detail::InvokeStatic<void>(DebugType, "LogError", message);
 }
-}
+} // namespace Debug
 namespace Screen {
 inline int width() {
     return detail::InvokeStatic<int>(ScreenType, "get_width");
@@ -24,7 +24,7 @@ inline int height() {
 inline float dpi() {
     return detail::InvokeStatic<float>(ScreenType, "get_dpi");
 }
-}
+} // namespace Screen
 namespace ObjectFilter {
 inline constexpr int kHideFlagsHierarchyMask = 1;
 inline constexpr int kHideFlagsImplicitRuntimeMask = 4 | 16 | 32;
@@ -65,7 +65,7 @@ inline std::vector<GameObject> canonicalize_game_objects(
     }
     return filtered;
 }
-}
+} // namespace ObjectFilter
 namespace SceneManager {
 inline TypeRef type() {
     return {"", "UnityEngine.SceneManagement", "SceneManager"};
@@ -120,7 +120,7 @@ inline std::vector<GameObject> FindSceneGameObjects(bool includeInactive = true)
     return FindSceneGameObjectsFiltered(includeInactive ? static_cast<std::uint32_t>(ObjectFilterFlags::IncludeInactive)
                                                         : static_cast<std::uint32_t>(ObjectFilterFlags::None));
 }
-}
+} // namespace SceneManager
 namespace Time {
 inline float time() {
     return detail::InvokeStatic<float>(TimeType, "get_time");
@@ -137,7 +137,7 @@ inline float timeScale() {
 inline void set_timeScale(float value) {
     detail::InvokeStatic<void>(TimeType, "set_timeScale", value);
 }
-}
+} // namespace Time
 namespace Input {
 inline bool available() {
     return URK::has_input();
@@ -178,7 +178,7 @@ inline bool GetMouseButtonDown(MouseButton button) {
 inline bool GetMouseButtonUp(MouseButton button) {
     return GetMouseButtonUp(static_cast<int>(button));
 }
-}
+} // namespace Input
 inline Vector2 screen_size(Camera camera = {}) {
     int width_value = Screen::width();
     int height_value = Screen::height();
@@ -316,7 +316,7 @@ inline bool world_visible(Vector3 world, float min_facing = 0.01f) {
     return world_visible(Camera::main(), world, min_facing);
 }
 
-}
+} // namespace URK::Unity
 // URK_UNITY_ALIASES_BEGIN
 namespace Unity {
 using AudioSource = URK::Unity::AudioSource;
@@ -465,7 +465,7 @@ inline void LogWarning(std::string_view message) {
 inline void LogError(std::string_view message) {
     URK::Unity::Debug::LogError(message);
 }
-}
+} // namespace Debug
 
 namespace Screen {
 inline int width() {
@@ -489,7 +489,7 @@ inline bool contains(Vector2 point, float padding = 0.0f, Camera camera = {}) {
 inline Vector2 clamp(Vector2 point, float padding = 0.0f, Camera camera = {}) {
     return URK::Unity::clamp_to_screen(point, padding, camera);
 }
-}
+} // namespace Screen
 
 namespace SceneManager {
 inline Scene GetActiveScene() {
@@ -518,7 +518,7 @@ inline std::vector<GameObject> FindSceneGameObjectsFiltered(
 inline std::vector<GameObject> FindSceneGameObjects(bool includeInactive = true) {
     return URK::Unity::SceneManager::FindSceneGameObjects(includeInactive);
 }
-}
+} // namespace SceneManager
 
 namespace Time {
 inline float time() {
@@ -536,7 +536,7 @@ inline float timeScale() {
 inline void set_timeScale(float value) {
     URK::Unity::Time::set_timeScale(value);
 }
-}
+} // namespace Time
 
 namespace Input {
 inline bool available() {
@@ -578,7 +578,7 @@ inline bool GetMouseButtonDown(MouseButton button) {
 inline bool GetMouseButtonUp(MouseButton button) {
     return URK::Unity::Input::GetMouseButtonUp(button);
 }
-}
+} // namespace Input
 
 inline Vector2 direction_to_screen_edge(Vector2 direction, float padding = 24.0f, Camera camera = {}) {
     return URK::Unity::direction_to_screen_edge(direction, padding, camera);
@@ -608,5 +608,4 @@ inline bool world_visible(Vector3 world, float min_facing = 0.01f) {
     return URK::Unity::world_visible(world, min_facing);
 }
 
-
-}
+} // namespace Unity

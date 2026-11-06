@@ -50,7 +50,8 @@ bool Dx12OverlayResources::create(IDXGISwapChain *swapChain) noexcept {
     if (FAILED(swapChain->GetDevice(__uuidof(ID3D12Device), reinterpret_cast<void **>(&device_))) || !device_ ||
         FAILED(swapChain->QueryInterface(__uuidof(IDXGISwapChain3), reinterpret_cast<void **>(&swapChain_))) ||
         !swapChain_) {
-        report("DX12 swap chain, device, or command queue unavailable; UI resources were not created.");
+        report("DX12 swap chain, device, or command queue unavailable; UI "
+               "resources were not created.");
         release_device_objects();
         return false;
     }
@@ -58,7 +59,8 @@ bool Dx12OverlayResources::create(IDXGISwapChain *swapChain) noexcept {
     DXGI_SWAP_CHAIN_DESC descriptor{};
     if (FAILED(swapChain->GetDesc(&descriptor)) || descriptor.BufferCount == 0 ||
         descriptor.BufferDesc.Format == DXGI_FORMAT_UNKNOWN) {
-        report("DX12 swap chain description is incomplete; UI resources were not created.");
+        report("DX12 swap chain description is incomplete; UI resources were not "
+               "created.");
         release_device_objects();
         return false;
     }
@@ -71,7 +73,7 @@ bool Dx12OverlayResources::create(IDXGISwapChain *swapChain) noexcept {
     rtvDescriptor.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
     rtvDescriptor.NumDescriptors = descriptor.BufferCount;
     if (FAILED(device_->CreateDescriptorHeap(&rtvDescriptor, __uuidof(ID3D12DescriptorHeap),
-                                              reinterpret_cast<void **>(&rtvHeap_))) ||
+                                             reinterpret_cast<void **>(&rtvHeap_))) ||
         !rtvHeap_) {
         report("DX12 RTV descriptor heap creation failed.");
         release_device_objects();
@@ -83,7 +85,7 @@ bool Dx12OverlayResources::create(IDXGISwapChain *swapChain) noexcept {
     srvDescriptor.NumDescriptors = kSrvDescriptorCapacity;
     srvDescriptor.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
     if (FAILED(device_->CreateDescriptorHeap(&srvDescriptor, __uuidof(ID3D12DescriptorHeap),
-                                              reinterpret_cast<void **>(&srvHeap_))) ||
+                                             reinterpret_cast<void **>(&srvHeap_))) ||
         !srvHeap_) {
         report("DX12 shader-visible descriptor heap creation failed.");
         release_device_objects();
@@ -96,12 +98,11 @@ bool Dx12OverlayResources::create(IDXGISwapChain *swapChain) noexcept {
     D3D12_CPU_DESCRIPTOR_HANDLE rtv = rtvHeap_->GetCPUDescriptorHandleForHeapStart();
     for (UINT index = 0; index < descriptor.BufferCount; ++index) {
         FrameContext &frame = frames_[index];
-        if (FAILED(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
-                                                   __uuidof(ID3D12CommandAllocator),
+        if (FAILED(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, __uuidof(ID3D12CommandAllocator),
                                                    reinterpret_cast<void **>(&frame.allocator))) ||
             !frame.allocator ||
-            FAILED(swapChain_->GetBuffer(index, __uuidof(ID3D12Resource),
-                                         reinterpret_cast<void **>(&frame.backBuffer))) ||
+            FAILED(
+                swapChain_->GetBuffer(index, __uuidof(ID3D12Resource), reinterpret_cast<void **>(&frame.backBuffer))) ||
             !frame.backBuffer) {
             report("DX12 frame resource creation failed.");
             release_device_objects();
@@ -134,7 +135,7 @@ bool Dx12OverlayResources::create(IDXGISwapChain *swapChain) noexcept {
     return true;
 }
 
-bool Dx12OverlayResources::wait_for_idle() noexcept {
+bool Dx12OverlayResources::wait_for_idle() const noexcept {
     if (synchronizationLost_)
         return false;
     if (!fence_ || !fenceEvent_)
@@ -154,7 +155,8 @@ bool Dx12OverlayResources::wait_for_idle() noexcept {
     if (FAILED(fence_->SetEventOnCompletion(lastSubmitted, fenceEvent_))) {
         if (poll_until_complete())
             return true;
-        report("DX12 fence event registration failed while waiting for overlay resources.");
+        report("DX12 fence event registration failed while waiting for overlay "
+               "resources.");
         return false;
     }
     // bounded: runs on the game's render thread
@@ -245,7 +247,7 @@ Dx12BeginFrameStatus Dx12OverlayResources::begin_frame(Dx12FrameSubmission *subm
     return Dx12BeginFrameStatus::ready;
 }
 
-bool Dx12OverlayResources::submit_frame(const Dx12FrameSubmission &submission) noexcept {
+bool Dx12OverlayResources::submit_frame(const Dx12FrameSubmission &submission) const noexcept {
     if (!commandQueue_ || !submission.commandList || submission.frameIndex >= frames_.size() ||
         FAILED(submission.commandList->Close())) {
         return false;
@@ -261,7 +263,8 @@ bool Dx12OverlayResources::complete_frame(const Dx12FrameSubmission &submission)
     const UINT64 fenceValue = nextFenceValue_++;
     if (FAILED(commandQueue_->Signal(fence_, fenceValue))) {
         synchronizationLost_ = true;
-        report("DX12 overlay fence signal failed; frame resources will not be reused.");
+        report("DX12 overlay fence signal failed; frame resources will not be "
+               "reused.");
         return false;
     }
     frames_[submission.frameIndex].fenceValue = fenceValue;
@@ -288,9 +291,8 @@ int Dx12OverlayResources::frame_count() const noexcept {
     return static_cast<int>(frames_.size());
 }
 
-void Dx12OverlayResources::allocate_srv_descriptor(ImGui_ImplDX12_InitInfo *,
-                                                    D3D12_CPU_DESCRIPTOR_HANDLE *cpuHandle,
-                                                    D3D12_GPU_DESCRIPTOR_HANDLE *gpuHandle) {
+void Dx12OverlayResources::allocate_srv_descriptor(ImGui_ImplDX12_InitInfo *, D3D12_CPU_DESCRIPTOR_HANDLE *cpuHandle,
+                                                   D3D12_GPU_DESCRIPTOR_HANDLE *gpuHandle) {
     if (!cpuHandle || !gpuHandle)
         return;
     *cpuHandle = {};
@@ -307,19 +309,21 @@ void Dx12OverlayResources::allocate_srv_descriptor(ImGui_ImplDX12_InitInfo *,
         return;
     }
     // slot 0 reserved: exhaustion costs a wrong texture, not a crash
-    owner->report("DX12 ImGui exhausted its shader-visible SRV descriptor heap; reusing the fallback slot.");
+    owner->report("DX12 ImGui exhausted its shader-visible SRV descriptor heap; "
+                  "reusing the fallback slot.");
     owner->descriptor_handles(kFallbackSrvDescriptor, cpuHandle, gpuHandle);
 }
 
 void Dx12OverlayResources::free_srv_descriptor(ImGui_ImplDX12_InitInfo *, D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle,
-                                                D3D12_GPU_DESCRIPTOR_HANDLE) {
+                                               D3D12_GPU_DESCRIPTOR_HANDLE) {
     Dx12OverlayResources *owner = descriptorOwner_;
     if (!owner || !owner->srvHeap_ || !owner->srvDescriptorSize_)
         return;
 
     const SIZE_T first = owner->srvHeap_->GetCPUDescriptorHandleForHeapStart().ptr;
     if (cpuHandle.ptr < first || (cpuHandle.ptr - first) % owner->srvDescriptorSize_ != 0) {
-        owner->report("DX12 ImGui released an SRV descriptor that this heap did not hand out.");
+        owner->report("DX12 ImGui released an SRV descriptor that this heap did "
+                      "not hand out.");
         return;
     }
     // fallback slot is shared, never freed

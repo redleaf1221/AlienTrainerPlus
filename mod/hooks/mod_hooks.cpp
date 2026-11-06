@@ -3,11 +3,11 @@
 #include "config/mod_config.h"
 #include "support/mod_log.h"
 
-#include "sdk/runtime_api.h"
-#include "sdk/hook_api.h"
 #include "render_imgui_hook.h"
-#include "sdk/il2cpp/il2cpp_runtime.h"
+#include "sdk/hook_api.h"
 #include "sdk/il2cpp/il2cpp_helpers.h"
+#include "sdk/il2cpp/il2cpp_runtime.h"
+#include "sdk/runtime_api.h"
 
 namespace {
 URK::hooks::HookSet g_hooks;
@@ -16,20 +16,19 @@ URK::hooks::HookSet g_hooks;
 namespace ModHooks {
 bool install(const URK_ModContext *ctx) {
     URK::set_context(ctx);
-  URK::il2cpp::init(ctx);
+    URK::il2cpp::init(ctx);
 
+    if (!URK::hooks::available()) {
+        ModLog::warn("hook API is unavailable; no hooks were installed");
+        return true;
+    }
 
-if (!URK::hooks::available()) {
-    ModLog::warn("hook API is unavailable; no hooks were installed");
+    // Register validated targets with g_hooks so uninstall() can detach them.
+    if (!ModRenderHook::install(ctx))
+        ModLog::warn("ImGui render hook could not be installed; continuing without menu");
+
+    ModLog::info("hook registry ready; ImGui render hook initialization requested");
     return true;
-}
-
-// Register validated targets with g_hooks so uninstall() can detach them.
-if (!ModRenderHook::install(ctx))
-    ModLog::warn("ImGui render hook could not be installed; continuing without menu");
-
-ModLog::info("hook registry ready; ImGui render hook initialization requested");
-return true;
 }
 
 void uninstall() {

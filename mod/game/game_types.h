@@ -28,112 +28,205 @@ using Object = ::URK::Unity::Object;
 inline constexpr TypeRef kAlienCharacter{"Assembly-CSharp", "", "AlienCharacter"};
 
 struct AlienCharacter {
-    static constexpr TypeRef type() { return kAlienCharacter; }
+    static constexpr TypeRef type() {
+        return kAlienCharacter;
+    }
 
     Object o;
     AlienCharacter() = default;
-    explicit AlienCharacter(Object value) : o(value) {}
-    explicit operator bool() const { return static_cast<bool>(o); }
-    void *handle() const { return o.handle(); }
+    explicit AlienCharacter(Object value) : o(value) {
+    }
+    explicit operator bool() const {
+        return static_cast<bool>(o);
+    }
+    void *handle() const {
+        return o.handle();
+    }
 
     // field: System.Action
-    Object connectedFunction() const { return o.GetField<Object>("connectedFunction"); }
-    void set_connectedFunction(Object value) { o.SetField<Object>("connectedFunction", value); }
+    Object connectedFunction() const {
+        return o.GetField<Object>("connectedFunction");
+    }
+    void set_connectedFunction(Object value) {
+        o.SetField<Object>("connectedFunction", value);
+    }
 
     // field: Shapes2D.Shape
-    Object shape() const { return o.GetField<Object>("shape"); }
-    void set_shape(Object value) { o.SetField<Object>("shape", value); }
+    Object shape() const {
+        return o.GetField<Object>("shape");
+    }
+    void set_shape(Object value) {
+        o.SetField<Object>("shape", value);
+    }
 
     // field: UnityEngine.SpriteRenderer
-    Object sp() const { return o.GetField<Object>("sp"); }
-    void set_sp(Object value) { o.SetField<Object>("sp", value); }
+    Object sp() const {
+        return o.GetField<Object>("sp");
+    }
+    void set_sp(Object value) {
+        o.SetField<Object>("sp", value);
+    }
 
     // field: TMPro.TMP_InputField
-    Object txt() const { return o.GetField<Object>("txt"); }
-    void set_txt(Object value) { o.SetField<Object>("txt", value); }
+    Object txt() const {
+        return o.GetField<Object>("txt");
+    }
+    void set_txt(Object value) {
+        o.SetField<Object>("txt", value);
+    }
 
     // field: UnityEngine.BoxCollider
-    Object box1() const { return o.GetField<Object>("box1"); }
-    void set_box1(Object value) { o.SetField<Object>("box1", value); }
+    Object box1() const {
+        return o.GetField<Object>("box1");
+    }
+    void set_box1(Object value) {
+        o.SetField<Object>("box1", value);
+    }
 
     // field: UnityEngine.RectTransform
-    Object rect() const { return o.GetField<Object>("rect"); }
-    void set_rect(Object value) { o.SetField<Object>("rect", value); }
+    Object rect() const {
+        return o.GetField<Object>("rect");
+    }
+    void set_rect(Object value) {
+        o.SetField<Object>("rect", value);
+    }
 
     // field: UnityEngine.Canvas
-    Object txt_canva() const { return o.GetField<Object>("txt_canva"); }
-    void set_txt_canva(Object value) { o.SetField<Object>("txt_canva", value); }
+    Object txt_canva() const {
+        return o.GetField<Object>("txt_canva");
+    }
+    void set_txt_canva(Object value) {
+        o.SetField<Object>("txt_canva", value);
+    }
 
     // field: bool
-    bool showtxt() const { return o.GetField<bool>("showtxt"); }
-    void set_showtxt(bool value) { o.SetField<bool>("showtxt", value); }
+    bool showtxt() const {
+        return o.GetField<bool>("showtxt");
+    }
+    void set_showtxt(bool value) {
+        o.SetField<bool>("showtxt", value);
+    }
 
     // field: bool
-    bool focused() const { return o.GetField<bool>("focused"); }
-    void set_focused(bool value) { o.SetField<bool>("focused", value); }
+    bool focused() const {
+        return o.GetField<bool>("focused");
+    }
+    void set_focused(bool value) {
+        o.SetField<bool>("focused", value);
+    }
 
     // field: string
-    std::string alien_txt() const { return o.GetField<std::string>("alien_txt"); }
+    std::string alien_txt() const {
+        return o.GetField<std::string>("alien_txt");
+    }
 
     // field: int
-    std::int32_t line() const { return o.GetField<std::int32_t>("line"); }
-    void set_line(std::int32_t value) { o.SetField<std::int32_t>("line", value); }
+    std::int32_t line() const {
+        return o.GetField<std::int32_t>("line");
+    }
+    void set_line(std::int32_t value) {
+        o.SetField<std::int32_t>("line", value);
+    }
 
     // field: int
-    std::int32_t line_x() const { return o.GetField<std::int32_t>("line_x"); }
-    void set_line_x(std::int32_t value) { o.SetField<std::int32_t>("line_x", value); }
+    std::int32_t line_x() const {
+        return o.GetField<std::int32_t>("line_x");
+    }
+    void set_line_x(std::int32_t value) {
+        o.SetField<std::int32_t>("line_x", value);
+    }
 
     // field: int
-    std::int32_t line_y() const { return o.GetField<std::int32_t>("line_y"); }
-    void set_line_y(std::int32_t value) { o.SetField<std::int32_t>("line_y", value); }
+    std::int32_t line_y() const {
+        return o.GetField<std::int32_t>("line_y");
+    }
+    void set_line_y(std::int32_t value) {
+        o.SetField<std::int32_t>("line_y", value);
+    }
 
     // field: int
-    std::int32_t page() const { return o.GetField<std::int32_t>("page"); }
-    void set_page(std::int32_t value) { o.SetField<std::int32_t>("page", value); }
+    std::int32_t page() const {
+        return o.GetField<std::int32_t>("page");
+    }
+    void set_page(std::int32_t value) {
+        o.SetField<std::int32_t>("page", value);
+    }
 
     // field: string
-    std::string line_str() const { return o.GetField<std::string>("line_str"); }
+    std::string line_str() const {
+        return o.GetField<std::string>("line_str");
+    }
 
     // field: string
-    std::string sector() const { return o.GetField<std::string>("sector"); }
+    std::string sector() const {
+        return o.GetField<std::string>("sector");
+    }
 
     // field: string
-    std::string button() const { return o.GetField<std::string>("button"); }
+    std::string button() const {
+        return o.GetField<std::string>("button");
+    }
 
     // field: int
-    std::int32_t slot_index() const { return o.GetField<std::int32_t>("slot_index"); }
-    void set_slot_index(std::int32_t value) { o.SetField<std::int32_t>("slot_index", value); }
+    std::int32_t slot_index() const {
+        return o.GetField<std::int32_t>("slot_index");
+    }
+    void set_slot_index(std::int32_t value) {
+        o.SetField<std::int32_t>("slot_index", value);
+    }
 
     // field: string
-    std::string extra_info() const { return o.GetField<std::string>("extra_info"); }
+    std::string extra_info() const {
+        return o.GetField<std::string>("extra_info");
+    }
 
     // field: UnityEngine.SpriteRenderer
-    Object background() const { return o.GetField<Object>("background"); }
-    void set_background(Object value) { o.SetField<Object>("background", value); }
+    Object background() const {
+        return o.GetField<Object>("background");
+    }
+    void set_background(Object value) {
+        o.SetField<Object>("background", value);
+    }
 
     // method: void Init()
-    void Init() const { return o.Call<void>("Init"); }
+    void Init() const {
+        return o.Call<void>("Init");
+    }
 
     // method: void UpdatePos()
-    void UpdatePos() const { return o.Call<void>("UpdatePos"); }
+    void UpdatePos() const {
+        return o.Call<void>("UpdatePos");
+    }
 
     // method: void EndEdit(string)
-    void EndEdit(std::string_view arg0) const { return o.Call<void>("EndEdit", arg0); }
+    void EndEdit(std::string_view arg0) const {
+        return o.Call<void>("EndEdit", arg0);
+    }
 
     // method: void StartEdit(string)
-    void StartEdit(std::string_view arg0) const { return o.Call<void>("StartEdit", arg0); }
+    void StartEdit(std::string_view arg0) const {
+        return o.Call<void>("StartEdit", arg0);
+    }
 
     // method: void LateUpdate()
-    void LateUpdate() const { return o.Call<void>("LateUpdate"); }
+    void LateUpdate() const {
+        return o.Call<void>("LateUpdate");
+    }
 
     // method: void ShowText(bool)
-    void ShowText(bool arg0) const { return o.Call<void>("ShowText", arg0); }
+    void ShowText(bool arg0) const {
+        return o.Call<void>("ShowText", arg0);
+    }
 
     // method: void Highlight(bool)
-    void Highlight(bool arg0) const { return o.Call<void>("Highlight", arg0); }
+    void Highlight(bool arg0) const {
+        return o.Call<void>("Highlight", arg0);
+    }
 
     // method: void UpdateEarthText()
-    void UpdateEarthText() const { return o.Call<void>("UpdateEarthText"); }
+    void UpdateEarthText() const {
+        return o.Call<void>("UpdateEarthText");
+    }
 
     // convenience lookups (UnityEngine.Object only)
     static AlienCharacter Find() {
@@ -153,185 +246,322 @@ struct AlienCharacter {
 inline constexpr TypeRef kGlobal{"Assembly-CSharp", "", "Global"};
 
 struct Global {
-    static constexpr TypeRef type() { return kGlobal; }
+    static constexpr TypeRef type() {
+        return kGlobal;
+    }
 
     Object o;
     Global() = default;
-    explicit Global(Object value) : o(value) {}
-    explicit operator bool() const { return static_cast<bool>(o); }
-    void *handle() const { return o.handle(); }
+    explicit Global(Object value) : o(value) {
+    }
+    explicit operator bool() const {
+        return static_cast<bool>(o);
+    }
+    void *handle() const {
+        return o.handle();
+    }
 
     // field: bool (static)
-    static bool hideUi() { return Object::StaticGetField<bool>(kGlobal, "hideUi"); }
-    static void set_hideUi(bool value) { Object::StaticSetField<bool>(kGlobal, "hideUi", value); }
+    static bool hideUi() {
+        return Object::StaticGetField<bool>(kGlobal, "hideUi");
+    }
+    static void set_hideUi(bool value) {
+        Object::StaticSetField<bool>(kGlobal, "hideUi", value);
+    }
 
     // field: bool (static)
-    static bool test() { return Object::StaticGetField<bool>(kGlobal, "test"); }
-    static void set_test(bool value) { Object::StaticSetField<bool>(kGlobal, "test", value); }
+    static bool test() {
+        return Object::StaticGetField<bool>(kGlobal, "test");
+    }
+    static void set_test(bool value) {
+        Object::StaticSetField<bool>(kGlobal, "test", value);
+    }
 
     // field: bool (static)
-    static bool testword() { return Object::StaticGetField<bool>(kGlobal, "testword"); }
-    static void set_testword(bool value) { Object::StaticSetField<bool>(kGlobal, "testword", value); }
+    static bool testword() {
+        return Object::StaticGetField<bool>(kGlobal, "testword");
+    }
+    static void set_testword(bool value) {
+        Object::StaticSetField<bool>(kGlobal, "testword", value);
+    }
 
     // field: bool (static)
-    static bool isDemo() { return Object::StaticGetField<bool>(kGlobal, "isDemo"); }
-    static void set_isDemo(bool value) { Object::StaticSetField<bool>(kGlobal, "isDemo", value); }
+    static bool isDemo() {
+        return Object::StaticGetField<bool>(kGlobal, "isDemo");
+    }
+    static void set_isDemo(bool value) {
+        Object::StaticSetField<bool>(kGlobal, "isDemo", value);
+    }
 
     // field: bool (static)
-    static bool test_demodata() { return Object::StaticGetField<bool>(kGlobal, "test_demodata"); }
-    static void set_test_demodata(bool value) { Object::StaticSetField<bool>(kGlobal, "test_demodata", value); }
+    static bool test_demodata() {
+        return Object::StaticGetField<bool>(kGlobal, "test_demodata");
+    }
+    static void set_test_demodata(bool value) {
+        Object::StaticSetField<bool>(kGlobal, "test_demodata", value);
+    }
 
     // field: bool (static)
-    static bool global_init() { return Object::StaticGetField<bool>(kGlobal, "global_init"); }
-    static void set_global_init(bool value) { Object::StaticSetField<bool>(kGlobal, "global_init", value); }
+    static bool global_init() {
+        return Object::StaticGetField<bool>(kGlobal, "global_init");
+    }
+    static void set_global_init(bool value) {
+        Object::StaticSetField<bool>(kGlobal, "global_init", value);
+    }
 
     // field: Draw (static)
-    static Object manager() { return Object::StaticGetField<Object>(kGlobal, "manager"); }
-    static void set_manager(Object value) { Object::StaticSetField<Object>(kGlobal, "manager", value); }
+    static Object manager() {
+        return Object::StaticGetField<Object>(kGlobal, "manager");
+    }
+    static void set_manager(Object value) {
+        Object::StaticSetField<Object>(kGlobal, "manager", value);
+    }
 
     // field: Global.GlobalData (static)
-    static Object globalData() { return Object::StaticGetField<Object>(kGlobal, "globalData"); }
-    static void set_globalData(Object value) { Object::StaticSetField<Object>(kGlobal, "globalData", value); }
+    static Object globalData() {
+        return Object::StaticGetField<Object>(kGlobal, "globalData");
+    }
+    static void set_globalData(Object value) {
+        Object::StaticSetField<Object>(kGlobal, "globalData", value);
+    }
 
     // field: bool (static)
-    static bool steam() { return Object::StaticGetField<bool>(kGlobal, "steam"); }
-    static void set_steam(bool value) { Object::StaticSetField<bool>(kGlobal, "steam", value); }
+    static bool steam() {
+        return Object::StaticGetField<bool>(kGlobal, "steam");
+    }
+    static void set_steam(bool value) {
+        Object::StaticSetField<bool>(kGlobal, "steam", value);
+    }
 
     // field: Global.SaveData (static)
-    static Object savedata() { return Object::StaticGetField<Object>(kGlobal, "savedata"); }
-    static void set_savedata(Object value) { Object::StaticSetField<Object>(kGlobal, "savedata", value); }
+    static Object savedata() {
+        return Object::StaticGetField<Object>(kGlobal, "savedata");
+    }
+    static void set_savedata(Object value) {
+        Object::StaticSetField<Object>(kGlobal, "savedata", value);
+    }
 
     // field: string (static)
-    static std::string version() { return Object::StaticGetField<std::string>(kGlobal, "version"); }
+    static std::string version() {
+        return Object::StaticGetField<std::string>(kGlobal, "version");
+    }
 
     // method: void UpdateDict(int) (static)
-    static void UpdateDict(std::int32_t arg0) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "UpdateDict", arg0); }
+    static void UpdateDict(std::int32_t arg0) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "UpdateDict", arg0);
+    }
 
     // method: string ReadAllTextSafe(string) (static)
-    static std::string ReadAllTextSafe(std::string_view arg0) { return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "ReadAllTextSafe", arg0); }
+    static std::string ReadAllTextSafe(std::string_view arg0) {
+        return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "ReadAllTextSafe", arg0);
+    }
 
     // method: void SetAchievement(string) (static)
-    static void SetAchievement(std::string_view arg0) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SetAchievement", arg0); }
+    static void SetAchievement(std::string_view arg0) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SetAchievement", arg0);
+    }
 
     // method: void Init() (static)
-    static void Init() { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "Init"); }
+    static void Init() {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "Init");
+    }
 
     // method: void InitWordSource(bool) (static)
-    static void InitWordSource(bool arg0) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "InitWordSource", arg0); }
+    static void InitWordSource(bool arg0) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "InitWordSource", arg0);
+    }
 
     // method: void Search_Radicial(string) (static)
-    static void Search_Radicial(std::string_view arg0) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "Search_Radicial", arg0); }
+    static void Search_Radicial(std::string_view arg0) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "Search_Radicial", arg0);
+    }
 
     // method: string RemoveBracket(string, bool) (static)
-    static std::string RemoveBracket(std::string_view arg0, bool arg1) { return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "RemoveBracket", arg0, arg1); }
+    static std::string RemoveBracket(std::string_view arg0, bool arg1) {
+        return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "RemoveBracket", arg0, arg1);
+    }
 
     // method: string ReverseParseToString(string) (static)
-    static std::string ReverseParseToString(std::string_view arg0) { return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "ReverseParseToString", arg0); }
+    static std::string ReverseParseToString(std::string_view arg0) {
+        return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "ReverseParseToString", arg0);
+    }
 
     // method: string RemoveBracketIfWin(string) (static)
-    static std::string RemoveBracketIfWin(std::string_view arg0) { return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "RemoveBracketIfWin", arg0); }
+    static std::string RemoveBracketIfWin(std::string_view arg0) {
+        return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "RemoveBracketIfWin", arg0);
+    }
 
     // method: bool GetWin(string) (static)
-    static bool GetWin(std::string_view arg0) { return ::URK::Unity::detail::InvokeStatic<bool>(kGlobal, "GetWin", arg0); }
+    static bool GetWin(std::string_view arg0) {
+        return ::URK::Unity::detail::InvokeStatic<bool>(kGlobal, "GetWin", arg0);
+    }
 
     // method: int CountWin(string) (static)
-    static std::int32_t CountWin(std::string_view arg0) { return ::URK::Unity::detail::InvokeStatic<std::int32_t>(kGlobal, "CountWin", arg0); }
+    static std::int32_t CountWin(std::string_view arg0) {
+        return ::URK::Unity::detail::InvokeStatic<std::int32_t>(kGlobal, "CountWin", arg0);
+    }
 
     // method: void SetWin(string) (static)
-    static void SetWin(std::string_view arg0) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SetWin", arg0); }
+    static void SetWin(std::string_view arg0) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SetWin", arg0);
+    }
 
     // method: void SetLose(string) (static)
-    static void SetLose(std::string_view arg0) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SetLose", arg0); }
+    static void SetLose(std::string_view arg0) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SetLose", arg0);
+    }
 
     // method: string ParseString(string, bool) (static)
-    static std::string ParseString(std::string_view arg0, bool arg1) { return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "ParseString", arg0, arg1); }
+    static std::string ParseString(std::string_view arg0, bool arg1) {
+        return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "ParseString", arg0, arg1);
+    }
 
     // method: string GetSolution(string, string) (static)
-    static std::string GetSolution(std::string_view arg0, std::string_view arg1) { return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "GetSolution", arg0, arg1); }
+    static std::string GetSolution(std::string_view arg0, std::string_view arg1) {
+        return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "GetSolution", arg0, arg1);
+    }
 
     // method: void SetSolution(string, string, string) (static)
-    static void SetSolution(std::string_view arg0, std::string_view arg1, std::string_view arg2) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SetSolution", arg0, arg1, arg2); }
+    static void SetSolution(std::string_view arg0, std::string_view arg1, std::string_view arg2) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SetSolution", arg0, arg1, arg2);
+    }
 
     // method: void SetFlag(string, long) (static)
-    static void SetFlag(std::string_view arg0, std::int64_t arg1) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SetFlag", arg0, arg1); }
+    static void SetFlag(std::string_view arg0, std::int64_t arg1) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SetFlag", arg0, arg1);
+    }
 
     // method: void AddFlag(string, long) (static)
-    static void AddFlag(std::string_view arg0, std::int64_t arg1) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "AddFlag", arg0, arg1); }
+    static void AddFlag(std::string_view arg0, std::int64_t arg1) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "AddFlag", arg0, arg1);
+    }
 
     // method: long GetFlag(string, long) (static)
-    static std::int64_t GetFlag(std::string_view arg0, std::int64_t arg1) { return ::URK::Unity::detail::InvokeStatic<std::int64_t>(kGlobal, "GetFlag", arg0, arg1); }
+    static std::int64_t GetFlag(std::string_view arg0, std::int64_t arg1) {
+        return ::URK::Unity::detail::InvokeStatic<std::int64_t>(kGlobal, "GetFlag", arg0, arg1);
+    }
 
     // method: int GetIntFlag(string, int) (static)
-    static std::int32_t GetIntFlag(std::string_view arg0, std::int32_t arg1) { return ::URK::Unity::detail::InvokeStatic<std::int32_t>(kGlobal, "GetIntFlag", arg0, arg1); }
+    static std::int32_t GetIntFlag(std::string_view arg0, std::int32_t arg1) {
+        return ::URK::Unity::detail::InvokeStatic<std::int32_t>(kGlobal, "GetIntFlag", arg0, arg1);
+    }
 
     // method: bool HasFlag(string) (static)
-    static bool HasFlag(std::string_view arg0) { return ::URK::Unity::detail::InvokeStatic<bool>(kGlobal, "HasFlag", arg0); }
+    static bool HasFlag(std::string_view arg0) {
+        return ::URK::Unity::detail::InvokeStatic<bool>(kGlobal, "HasFlag", arg0);
+    }
 
     // method: void SetDFlag(string, double) (static)
-    static void SetDFlag(std::string_view arg0, double arg1) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SetDFlag", arg0, arg1); }
+    static void SetDFlag(std::string_view arg0, double arg1) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SetDFlag", arg0, arg1);
+    }
 
     // method: void AddDFlag(string, double) (static)
-    static void AddDFlag(std::string_view arg0, double arg1) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "AddDFlag", arg0, arg1); }
+    static void AddDFlag(std::string_view arg0, double arg1) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "AddDFlag", arg0, arg1);
+    }
 
     // method: double GetDFlag(string, double) (static)
-    static double GetDFlag(std::string_view arg0, double arg1) { return ::URK::Unity::detail::InvokeStatic<double>(kGlobal, "GetDFlag", arg0, arg1); }
+    static double GetDFlag(std::string_view arg0, double arg1) {
+        return ::URK::Unity::detail::InvokeStatic<double>(kGlobal, "GetDFlag", arg0, arg1);
+    }
 
     // method: string GetInfo(string, string) (static)
-    static std::string GetInfo(std::string_view arg0, std::string_view arg1) { return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "GetInfo", arg0, arg1); }
+    static std::string GetInfo(std::string_view arg0, std::string_view arg1) {
+        return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "GetInfo", arg0, arg1);
+    }
 
     // method: string GetDict(string) (static)
-    static std::string GetDict(std::string_view arg0) { return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "GetDict", arg0); }
+    static std::string GetDict(std::string_view arg0) {
+        return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "GetDict", arg0);
+    }
 
     // method: void WriteDict(string, string) (static)
-    static void WriteDict(std::string_view arg0, std::string_view arg1) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "WriteDict", arg0, arg1); }
+    static void WriteDict(std::string_view arg0, std::string_view arg1) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "WriteDict", arg0, arg1);
+    }
 
     // method: UnityEngine.Color FrontColor() (static)
-    static ::URK::Unity::Color FrontColor() { return ::URK::Unity::detail::InvokeStatic<::URK::Unity::Color>(kGlobal, "FrontColor"); }
+    static ::URK::Unity::Color FrontColor() {
+        return ::URK::Unity::detail::InvokeStatic<::URK::Unity::Color>(kGlobal, "FrontColor");
+    }
 
     // method: UnityEngine.Color BackColor() (static)
-    static ::URK::Unity::Color BackColor() { return ::URK::Unity::detail::InvokeStatic<::URK::Unity::Color>(kGlobal, "BackColor"); }
+    static ::URK::Unity::Color BackColor() {
+        return ::URK::Unity::detail::InvokeStatic<::URK::Unity::Color>(kGlobal, "BackColor");
+    }
 
     // method: void SaveGame() (static)
-    static void SaveGame() { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SaveGame"); }
+    static void SaveGame() {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SaveGame");
+    }
 
     // method: void SaveSetting() (static)
-    static void SaveSetting() { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SaveSetting"); }
+    static void SaveSetting() {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "SaveSetting");
+    }
 
     // method: void InitData(string, bool) (static)
-    static void InitData(std::string_view arg0, bool arg1) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "InitData", arg0, arg1); }
+    static void InitData(std::string_view arg0, bool arg1) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "InitData", arg0, arg1);
+    }
 
     // method: void LoadGame(bool) (static)
-    static void LoadGame(bool arg0) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "LoadGame", arg0); }
+    static void LoadGame(bool arg0) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "LoadGame", arg0);
+    }
 
     // method: void DefaultSetting(bool) (static)
-    static void DefaultSetting(bool arg0) { return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "DefaultSetting", arg0); }
+    static void DefaultSetting(bool arg0) {
+        return ::URK::Unity::detail::InvokeStatic<void>(kGlobal, "DefaultSetting", arg0);
+    }
 
     // method: double HumanUnitToAlienUnit(string, double) (static)
-    static double HumanUnitToAlienUnit(std::string_view arg0, double arg1) { return ::URK::Unity::detail::InvokeStatic<double>(kGlobal, "HumanUnitToAlienUnit", arg0, arg1); }
+    static double HumanUnitToAlienUnit(std::string_view arg0, double arg1) {
+        return ::URK::Unity::detail::InvokeStatic<double>(kGlobal, "HumanUnitToAlienUnit", arg0, arg1);
+    }
 
     // method: bool ValidMessage(string) (static)
-    static bool ValidMessage(std::string_view arg0) { return ::URK::Unity::detail::InvokeStatic<bool>(kGlobal, "ValidMessage", arg0); }
+    static bool ValidMessage(std::string_view arg0) {
+        return ::URK::Unity::detail::InvokeStatic<bool>(kGlobal, "ValidMessage", arg0);
+    }
 
     // method: int ParseInt(string) (static)
-    static std::int32_t ParseInt(std::string_view arg0) { return ::URK::Unity::detail::InvokeStatic<std::int32_t>(kGlobal, "ParseInt", arg0); }
+    static std::int32_t ParseInt(std::string_view arg0) {
+        return ::URK::Unity::detail::InvokeStatic<std::int32_t>(kGlobal, "ParseInt", arg0);
+    }
 
     // method: string FloatToString(double) (static)
-    static std::string FloatToString(double arg0) { return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "FloatToString", arg0); }
+    static std::string FloatToString(double arg0) {
+        return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "FloatToString", arg0);
+    }
 
     // method: string IntToString(long) (static)
-    static std::string IntToString(std::int64_t arg0) { return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "IntToString", arg0); }
+    static std::string IntToString(std::int64_t arg0) {
+        return ::URK::Unity::detail::InvokeStatic<std::string>(kGlobal, "IntToString", arg0);
+    }
 
     // method: int IsPow7(int) (static)
-    static std::int32_t IsPow7(std::int32_t arg0) { return ::URK::Unity::detail::InvokeStatic<std::int32_t>(kGlobal, "IsPow7", arg0); }
+    static std::int32_t IsPow7(std::int32_t arg0) {
+        return ::URK::Unity::detail::InvokeStatic<std::int32_t>(kGlobal, "IsPow7", arg0);
+    }
 
     // method: int GCD(int, int) (static)
-    static std::int32_t GCD(std::int32_t arg0, std::int32_t arg1) { return ::URK::Unity::detail::InvokeStatic<std::int32_t>(kGlobal, "GCD", arg0, arg1); }
+    static std::int32_t GCD(std::int32_t arg0, std::int32_t arg1) {
+        return ::URK::Unity::detail::InvokeStatic<std::int32_t>(kGlobal, "GCD", arg0, arg1);
+    }
 
     // method: float Cross(UnityEngine.Vector2, UnityEngine.Vector2) (static)
-    static float Cross(::URK::Unity::Vector2 arg0, ::URK::Unity::Vector2 arg1) { return ::URK::Unity::detail::InvokeStatic<float>(kGlobal, "Cross", arg0, arg1); }
+    static float Cross(::URK::Unity::Vector2 arg0, ::URK::Unity::Vector2 arg1) {
+        return ::URK::Unity::detail::InvokeStatic<float>(kGlobal, "Cross", arg0, arg1);
+    }
 
-    // method: bool LineOverlap(UnityEngine.Vector2, UnityEngine.Vector2, UnityEngine.Vector2, UnityEngine.Vector2) (static)
-    static bool LineOverlap(::URK::Unity::Vector2 arg0, ::URK::Unity::Vector2 arg1, ::URK::Unity::Vector2 arg2, ::URK::Unity::Vector2 arg3) { return ::URK::Unity::detail::InvokeStatic<bool>(kGlobal, "LineOverlap", arg0, arg1, arg2, arg3); }
+    // method: bool LineOverlap(UnityEngine.Vector2, UnityEngine.Vector2,
+    // UnityEngine.Vector2, UnityEngine.Vector2) (static)
+    static bool LineOverlap(::URK::Unity::Vector2 arg0, ::URK::Unity::Vector2 arg1, ::URK::Unity::Vector2 arg2,
+                            ::URK::Unity::Vector2 arg3) {
+        return ::URK::Unity::detail::InvokeStatic<bool>(kGlobal, "LineOverlap", arg0, arg1, arg2, arg3);
+    }
 };
 
 // ---------------------------------------------------------------------------
@@ -451,7 +681,8 @@ inline void run() {
     (void)Global::IsPow7(std::int32_t{});
     (void)Global::GCD(std::int32_t{}, std::int32_t{});
     (void)Global::Cross(::URK::Unity::Vector2{}, ::URK::Unity::Vector2{});
-    (void)Global::LineOverlap(::URK::Unity::Vector2{}, ::URK::Unity::Vector2{}, ::URK::Unity::Vector2{}, ::URK::Unity::Vector2{});
+    (void)Global::LineOverlap(::URK::Unity::Vector2{}, ::URK::Unity::Vector2{}, ::URK::Unity::Vector2{},
+                              ::URK::Unity::Vector2{});
 }
 } // namespace urtypegen_self_check
 #endif

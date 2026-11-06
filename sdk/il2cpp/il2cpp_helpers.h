@@ -3,9 +3,7 @@
 #include "../hook_api.h"
 #include "il2cpp_runtime.h"
 
-#include <cstddef>
 #include <cstdio>
-#include <cstring>
 #include <initializer_list>
 #include <mutex>
 #include <string>
@@ -48,7 +46,7 @@ inline std::string to_utf8(URK::il2cpp::String *value, std::string_view fallback
     std::vector<char> buffer(capacity ? capacity : 1u, '\0');
     if (!URK::il2cpp::string_to_utf8(value, buffer.data(), buffer.size()))
         return std::string(fallback);
-    return std::string(buffer.data());
+    return {buffer.data()};
 }
 inline std::string to_utf8(URK::il2cpp::String *value) {
     return to_utf8(value, std::string_view{});
@@ -81,7 +79,7 @@ inline bool is_executable_protection(unsigned long protect) {
     return protect == PAGE_EXECUTE || protect == PAGE_EXECUTE_READ || protect == PAGE_EXECUTE_READWRITE ||
            protect == PAGE_EXECUTE_WRITECOPY;
 }
-inline bool address_in_module(void *address, const char *module_name) {
+inline bool address_in_module(const void *address, const char *module_name) {
     HMODULE module = ::GetModuleHandleA(module_name);
     if (!module || !address)
         return false;
@@ -92,21 +90,21 @@ inline bool address_in_module(void *address, const char *module_name) {
     const auto *nt = reinterpret_cast<const IMAGE_NT_HEADERS *>(base + dos->e_lfanew);
     if (nt->Signature != IMAGE_NT_SIGNATURE)
         return false;
-    const auto *ptr = reinterpret_cast<const unsigned char *>(address);
+    const auto *ptr = static_cast<const unsigned char *>(address);
     return ptr >= base && ptr < (base + nt->OptionalHeader.SizeOfImage);
 }
 // icalls may live outside GameAssembly.dll; require code in any mapped image.
-inline bool address_in_any_module(void *address) {
+inline bool address_in_any_module(const void *address) {
     if (!address)
         return false;
     HMODULE owner = nullptr;
     if (!::GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-                              reinterpret_cast<LPCSTR>(address), &owner)) {
+                              static_cast<LPCSTR>(address), &owner)) {
         return false;
     }
     return owner != nullptr;
 }
-inline bool is_valid_icall_target(void *target) {
+inline bool is_valid_icall_target(const void *target) {
     if (!target)
         return false;
     MEMORY_BASIC_INFORMATION mbi{};
@@ -212,7 +210,7 @@ inline void *require_method_pointer(const URK::il2cpp::Method *method, Diagnosti
 }
 // Reports why a hook may never fire: ICF-shared entry or shared generic stub.
 // Inlined bodies can't be detected here.
-inline void warn_if_entry_point_unreachable(const URK::il2cpp::Method *method, void *target, DiagnosticSink sink,
+inline void warn_if_entry_point_unreachable(const URK::il2cpp::Method *method, const void *target, DiagnosticSink sink,
                                             const char *method_name) {
     if (!sink || !method || !target)
         return;
@@ -234,8 +232,10 @@ inline void warn_if_entry_point_unreachable(const URK::il2cpp::Method *method, v
         return;
     char message[512]{};
     std::snprintf(message, sizeof(message),
-                  "[URK IL2CPP runtime] %s shares its native entry point with %s; the compiler folded identical "
-                  "bodies, so this hook observes both and may never see the call you expect",
+                  "[URK IL2CPP runtime] %s shares its native entry point with "
+                  "%s; the compiler folded identical "
+                  "bodies, so this hook observes both and may never see the call "
+                  "you expect",
                   method_name ? method_name : "the hooked method", twin);
     emit(sink, message);
 }

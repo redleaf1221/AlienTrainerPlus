@@ -33,9 +33,9 @@ inline void render_word_test() {
     ImGui::PopStyleColor();
 
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
-    const std::string hotkey =
-        ModConfig::word_test_hotkey ? ModUI::Widgets::key_name(ModConfig::word_test_hotkey)
-                                    : std::string(ModUI::Localization::translate("trainer.hotkey.disabled"));
+    const std::string hotkey = ModConfig::word_test_hotkey
+                                   ? ModUI::Widgets::key_name(ModConfig::word_test_hotkey)
+                                   : std::string(ModUI::Localization::translate("trainer.hotkey.disabled"));
     ModUI::Widgets::key_value(ModUI::Localization::translate("trainer.hotkey"), hotkey.c_str());
 }
 

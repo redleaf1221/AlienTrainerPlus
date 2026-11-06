@@ -7,7 +7,6 @@
 #endif
 #include <Windows.h>
 #include <cmath>
-#include <cstddef>
 #include <cstdio>
 #include <imgui.h>
 
@@ -94,7 +93,7 @@ inline ImVec4 with_alpha(ImVec4 c, float alpha) {
 }
 
 inline ImVec4 mix(const ImVec4 &a, const ImVec4 &b, float t) {
-    return ImVec4(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t, a.w + (b.w - a.w) * t);
+    return {a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t, a.w + (b.w - a.w) * t};
 }
 
 inline const ImWchar *glyph_ranges() {
@@ -130,7 +129,7 @@ inline ImFont *&heading_font() {
     return value;
 }
 
-inline ImFont *load_windows_font(ImGuiIO &io, const char *file_name, float size_px,
+inline ImFont *load_windows_font(const ImGuiIO &io, const char *file_name, float size_px,
                                  const ImWchar *ranges = glyph_ranges(), bool merge_mode = false) {
     char windows_dir[MAX_PATH]{};
     const UINT windows_dir_len = GetWindowsDirectoryA(windows_dir, MAX_PATH);
@@ -156,8 +155,8 @@ inline ImFont *load_windows_font(ImGuiIO &io, const char *file_name, float size_
     return io.Fonts->AddFontFromFileTTF(font_path, size_px, &config, ranges);
 }
 
-inline bool merge_first_windows_font(ImGuiIO &io, const char *const *file_names, size_t file_name_count, float size_px,
-                                     const ImWchar *ranges) {
+inline bool merge_first_windows_font(const ImGuiIO &io, const char *const *file_names, size_t file_name_count,
+                                     float size_px, const ImWchar *ranges) {
     for (size_t index = 0; index < file_name_count; ++index) {
         if (load_windows_font(io, file_names[index], size_px, ranges, true))
             return true;
@@ -165,9 +164,9 @@ inline bool merge_first_windows_font(ImGuiIO &io, const char *const *file_names,
     return false;
 }
 
-inline void merge_cjk_fallbacks(ImGuiIO &io, float size_px) {
-    static const char *const japanese_fonts[] = {"YuGothM.ttc", "meiryo.ttc", "msgothic.ttc"};
-    static const char *const chinese_fonts[] = {"msyh.ttc", "simsun.ttc", "msjh.ttc"};
+inline void merge_cjk_fallbacks(const ImGuiIO &io, float size_px) {
+    static constexpr const char *const japanese_fonts[] = {"YuGothM.ttc", "meiryo.ttc", "msgothic.ttc"};
+    static constexpr const char *const chinese_fonts[] = {"msyh.ttc", "simsun.ttc", "msjh.ttc"};
     const bool japanese_loaded = merge_first_windows_font(io, japanese_fonts, IM_ARRAYSIZE(japanese_fonts), size_px,
                                                           io.Fonts->GetGlyphRangesJapanese());
     const bool chinese_loaded = merge_first_windows_font(io, chinese_fonts, IM_ARRAYSIZE(chinese_fonts), size_px,
@@ -179,7 +178,7 @@ inline void merge_cjk_fallbacks(ImGuiIO &io, float size_px) {
 }
 
 inline float font_size_px() {
-    float size = std::floor((18.0f * dpi_scale()) + 0.5f);
+    float size = std::floor(18.0f * dpi_scale() + 0.5f);
     if (size < 18.0f)
         size = 18.0f;
     if (size > 28.0f)
@@ -200,8 +199,7 @@ inline void install_default_font() {
     loaded_font_name() = "default";
     using_ttf_font() = false;
     const float size_px = font_size_px();
-    ImFont *regular = load_windows_font(io, "segoeui.ttf", size_px);
-    if (regular) {
+    if (ImFont *regular = load_windows_font(io, "segoeui.ttf", size_px)) {
         merge_cjk_fallbacks(io, size_px);
         io.FontDefault = regular;
         heading_font() = load_windows_font(io, "seguisb.ttf", size_px + 2.0f);

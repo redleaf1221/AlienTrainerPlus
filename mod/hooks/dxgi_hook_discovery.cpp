@@ -7,8 +7,6 @@
 #define NOMINMAX
 #endif
 #include <Windows.h>
-#include <cstddef>
-#include <cstdint>
 #include <cstdio>
 #include <d3d11.h>
 #include <d3d12.h>
@@ -36,17 +34,17 @@ void report(DxgiDiscoveryDiagnosticSink sink, const char *message) {
 
 [[nodiscard]] bool executable(const void *pointer) {
     MEMORY_BASIC_INFORMATION memory{};
-    if (!pointer || VirtualQuery(pointer, &memory, sizeof(memory)) != sizeof(memory) ||
-        memory.State != MEM_COMMIT || (memory.Protect & (PAGE_NOACCESS | PAGE_GUARD))) {
+    if (!pointer || VirtualQuery(pointer, &memory, sizeof(memory)) != sizeof(memory) || memory.State != MEM_COMMIT ||
+        (memory.Protect & (PAGE_NOACCESS | PAGE_GUARD))) {
         return false;
     }
     const DWORD protection = memory.Protect & 0xff;
-    return protection == PAGE_EXECUTE || protection == PAGE_EXECUTE_READ ||
-           protection == PAGE_EXECUTE_READWRITE || protection == PAGE_EXECUTE_WRITECOPY;
+    return protection == PAGE_EXECUTE || protection == PAGE_EXECUTE_READ || protection == PAGE_EXECUTE_READWRITE ||
+           protection == PAGE_EXECUTE_WRITECOPY;
 }
 
-[[nodiscard]] bool capture_targets(IDXGISwapChain *swapChain, const char *probeName,
-                                   DxgiVTableTargets *targets, DxgiDiscoveryDiagnosticSink sink) {
+[[nodiscard]] bool capture_targets(IDXGISwapChain *swapChain, const char *probeName, DxgiVTableTargets *targets,
+                                   DxgiDiscoveryDiagnosticSink sink) {
     if (!swapChain || !targets || !readable_range(swapChain, sizeof(void *))) {
         report(sink, "DXGI probe did not return a readable swap chain.");
         return false;
@@ -63,7 +61,9 @@ void report(DxgiDiscoveryDiagnosticSink sink, const char *message) {
         return true;
 
     char text[160]{};
-    std::snprintf(text, sizeof(text), "%s probe found non-executable swap-chain hook targets; UI not installed.",
+    std::snprintf(text, sizeof(text),
+                  "%s probe found non-executable swap-chain hook targets; UI not "
+                  "installed.",
                   probeName ? probeName : "DXGI");
     report(sink, text);
     return false;
@@ -74,8 +74,18 @@ class ProbeWindow final {
     explicit ProbeWindow(bool preferDx12) {
         std::snprintf(className_, sizeof(className_), "URK_%s_Probe_%lu_%lu_%lu", preferDx12 ? "DX12" : "DX11",
                       GetCurrentProcessId(), GetCurrentThreadId(), GetTickCount());
-        windowClass_ = {sizeof(WNDCLASSEXA), CS_CLASSDC, DefWindowProcA, 0, 0, GetModuleHandleA(nullptr),
-                        nullptr, nullptr, nullptr, nullptr, className_, nullptr};
+        windowClass_ = {sizeof(WNDCLASSEXA),
+                        CS_CLASSDC,
+                        DefWindowProcA,
+                        0,
+                        0,
+                        GetModuleHandleA(nullptr),
+                        nullptr,
+                        nullptr,
+                        nullptr,
+                        nullptr,
+                        className_,
+                        nullptr};
         registered_ = RegisterClassExA(&windowClass_) != 0;
         if (registered_) {
             window_ = CreateWindowA(className_, className_, WS_OVERLAPPEDWINDOW, 0, 0, 100, 100, nullptr, nullptr,
@@ -90,8 +100,12 @@ class ProbeWindow final {
             UnregisterClassA(className_, windowClass_.hInstance);
     }
 
-    [[nodiscard]] HWND get() const noexcept { return window_; }
-    [[nodiscard]] bool registered() const noexcept { return registered_; }
+    [[nodiscard]] HWND get() const noexcept {
+        return window_;
+    }
+    [[nodiscard]] bool registered() const noexcept {
+        return registered_;
+    }
 
   private:
     char className_[96]{};
@@ -147,7 +161,9 @@ DxgiVTableTargets discover_dxgi_hook_targets(bool preferDx12, DxgiDiscoveryDiagn
             (void)capture_targets(swapChain, "DX12", &targets, sink);
         } else {
             char text[160]{};
-            std::snprintf(text, sizeof(text), "DX12 probe swap-chain creation failed (hr=0x%08X); UI not installed.",
+            std::snprintf(text, sizeof(text),
+                          "DX12 probe swap-chain creation failed (hr=0x%08X); UI not "
+                          "installed.",
                           static_cast<unsigned>(result));
             report(sink, text);
         }
@@ -172,8 +188,8 @@ DxgiVTableTargets discover_dxgi_hook_targets(bool preferDx12, DxgiDiscoveryDiagn
     descriptor.SampleDesc.Count = 1;
     descriptor.Windowed = TRUE;
     descriptor.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-    constexpr D3D_FEATURE_LEVEL featureLevels[] = {
-        D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0};
+    constexpr D3D_FEATURE_LEVEL featureLevels[] = {D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1,
+                                                   D3D_FEATURE_LEVEL_10_0};
     constexpr D3D_DRIVER_TYPE driverTypes[] = {D3D_DRIVER_TYPE_HARDWARE, D3D_DRIVER_TYPE_WARP};
 
     ID3D11Device *device = nullptr;
@@ -183,8 +199,8 @@ DxgiVTableTargets discover_dxgi_hook_targets(bool preferDx12, DxgiDiscoveryDiagn
     HRESULT result = E_FAIL;
     for (D3D_DRIVER_TYPE driverType : driverTypes) {
         result = D3D11CreateDeviceAndSwapChain(nullptr, driverType, nullptr, 0, featureLevels,
-                                              static_cast<UINT>(std::size(featureLevels)), D3D11_SDK_VERSION,
-                                              &descriptor, &swapChain, &device, &createdLevel, &context);
+                                               static_cast<UINT>(std::size(featureLevels)), D3D11_SDK_VERSION,
+                                               &descriptor, &swapChain, &device, &createdLevel, &context);
         if (SUCCEEDED(result) && swapChain)
             break;
         if (swapChain) {
@@ -205,7 +221,8 @@ DxgiVTableTargets discover_dxgi_hook_targets(bool preferDx12, DxgiDiscoveryDiagn
     } else {
         char text[160]{};
         std::snprintf(text, sizeof(text),
-                      "DXGI probe device creation failed (hr=0x%08X); DX11/DX12 overlay unavailable.",
+                      "DXGI probe device creation failed (hr=0x%08X); DX11/DX12 "
+                      "overlay unavailable.",
                       static_cast<unsigned>(result));
         report(sink, text);
     }
@@ -223,7 +240,8 @@ void *discover_dx12_execute_command_lists_target(DxgiDiscoveryDiagnosticSink sin
     if (FAILED(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device),
                                  reinterpret_cast<void **>(&device))) ||
         !device) {
-        report(sink, "DX12 probe device creation failed; DX12 overlay will remain unavailable.");
+        report(sink, "DX12 probe device creation failed; DX12 overlay will remain "
+                     "unavailable.");
         return nullptr;
     }
     D3D12_COMMAND_QUEUE_DESC descriptor{};
@@ -240,7 +258,8 @@ void *discover_dx12_execute_command_lists_target(DxgiDiscoveryDiagnosticSink sin
             report(sink, "DX12 ExecuteCommandLists target is unreadable or non-executable.");
         }
     } else {
-        report(sink, "DX12 probe command queue creation failed; DX12 overlay will remain unavailable.");
+        report(sink, "DX12 probe command queue creation failed; DX12 overlay will "
+                     "remain unavailable.");
     }
     if (queue)
         queue->Release();

@@ -5,7 +5,8 @@ namespace URK::Unity {
 // URK_UNITY_INSPECT_BEGIN
 namespace Inspect {
 inline constexpr std::uint32_t kStaticMemberFlag = 0x0010u;
-// Obfuscated names may be invalid UTF-8; replace them with stable printable IDs.
+// Obfuscated names may be invalid UTF-8; replace them with stable printable
+// IDs.
 inline bool metadata_name_is_valid_utf8(std::string_view text) {
     for (std::size_t index = 0; index < text.size();) {
         const unsigned char first = static_cast<unsigned char>(text[index]);
@@ -349,14 +350,14 @@ inline MethodInfo method_info(const URK::il2cpp ::Method *method, TypeInfo decla
     info.is_static = (info.flags & kStaticMemberFlag) != 0;
     info.return_type_handle = URK::il2cpp ::method_get_return_type(method);
     info.return_type = type_name(info.return_type_handle);
-        const std::uint32_t count = URK::il2cpp::method_get_param_count(method);
+    const std::uint32_t count = URK::il2cpp::method_get_param_count(method);
     info.parameters.reserve(count);
     for (std::uint32_t i = 0; i < count; ++i) {
-        const void* paramType = URK::il2cpp::method_get_param(method, i);
-        const char* paramName = URK::il2cpp::method_get_param_name(method, i);
+        const void *paramType = URK::il2cpp::method_get_param(method, i);
+        const char *paramName = URK::il2cpp::method_get_param_name(method, i);
         info.parameters.push_back(MethodParamInfo{paramType, metadata_display_name(paramName), type_name(paramType)});
     }
- return info;
+    return info;
 }
 inline std::vector<MethodInfo> methods_from_class(const URK::il2cpp ::Class *klass, bool includeInherited) {
     std::vector<MethodInfo> out;
@@ -406,9 +407,11 @@ inline PropertyInfo property_info(const URK::il2cpp ::Property *property, TypeIn
     info.can_read = info.get_method != nullptr;
     info.can_write = info.set_method != nullptr;
     const void *propertyType =
-        info.get_method ? URK::il2cpp ::method_get_return_type(static_cast<const URK::il2cpp ::Method *>(info.get_method))
-                        : (info.set_method ? URK::il2cpp ::method_get_param(static_cast<const URK::il2cpp ::Method *>(info.set_method), 0)
-                                           : nullptr);
+        info.get_method
+            ? URK::il2cpp ::method_get_return_type(static_cast<const URK::il2cpp ::Method *>(info.get_method))
+            : (info.set_method
+                   ? URK::il2cpp ::method_get_param(static_cast<const URK::il2cpp ::Method *>(info.set_method), 0)
+                   : nullptr);
     const TypeInfo propertyTypeInfo = DescribeType(propertyType);
     info.type = propertyType;
     info.type_name = type_name(propertyType);
@@ -481,11 +484,12 @@ inline std::string enum_underlying_type_name(const void *type) {
         type ? URK::il2cpp ::type_get_class_or_element_class(static_cast<const URK::il2cpp ::Type *>(type)) : nullptr;
     if (!klass)
         return {};
-    
-    const void* underlying = URK::il2cpp::class_enum_basetype(static_cast<const URK::il2cpp::Class*>(klass));
-    if (underlying) return type_name(underlying); void *it = nullptr;
-    while (const auto *field =
-               URK::il2cpp ::class_get_fields(static_cast<const URK::il2cpp ::Class *>(klass), &it)) {
+
+    const void *underlying = URK::il2cpp::class_enum_basetype(static_cast<const URK::il2cpp::Class *>(klass));
+    if (underlying)
+        return type_name(underlying);
+    void *it = nullptr;
+    while (const auto *field = URK::il2cpp ::class_get_fields(static_cast<const URK::il2cpp ::Class *>(klass), &it)) {
         const char *name = URK::il2cpp ::field_get_name(field);
         if (name && std::string_view{name} == "value__")
             return type_name(URK::il2cpp ::field_get_type(field));
@@ -1426,7 +1430,7 @@ inline void DumpProperties(TypeRef type, DiagnosticSink sink = nullptr) {
     }
 }
 } // namespace Inspect
-}
+} // namespace URK::Unity
 namespace Unity {
 // URK_UNITY_INSPECT_ALIASES_BEGIN
 namespace Inspect {
@@ -1523,5 +1527,5 @@ inline void DumpMethods(TypeRef type, DiagnosticSink sink = nullptr) {
 inline void DumpProperties(TypeRef type, DiagnosticSink sink = nullptr) {
     URK::Unity::Inspect::DumpProperties(type, sink);
 }
-}
-}
+} // namespace Inspect
+} // namespace Unity

@@ -2331,7 +2331,8 @@ struct GameObject : Object {
         return detail::InvokeStatic<GameObject>(GameObjectType, "Find", name);
     }
     static GameObject FindWithTag(std::string_view tag) {
-        // The managed wrapper can be stripped; the extern binding survives through Unity 6.
+        // The managed wrapper can be stripped; the extern binding survives through
+        // Unity 6.
         return detail::InvokeStatic<GameObject>(GameObjectType, "FindGameObjectWithTag", tag);
     }
     static std::vector<GameObject> FindGameObjectsWithTag(std::string_view tag) {
@@ -2427,7 +2428,8 @@ struct GameObject : Object {
     Scene scene() const {
         return Scene{Call<void *>("get_scene")};
     }
-    // GameObject.scene may be stripped; check before treating the object as an asset.
+    // GameObject.scene may be stripped; check before treating the object as an
+    // asset.
     static bool scene_available() {
         return has_method(GameObjectType, "get_scene", 0);
     }
@@ -2527,8 +2529,7 @@ struct GameObject : Object {
     }
     template <class T = Object>
     detail::RootedObjectArray<T> GetComponentsInParentRooted(bool includeInactive = false) const {
-        return detail::QueryComponentsRooted<T>(*this, detail::component_search_type<T>(), true, includeInactive,
-                                                true);
+        return detail::QueryComponentsRooted<T>(*this, detail::component_search_type<T>(), true, includeInactive, true);
     }
     template <class T> T AddComponent() const {
         if constexpr (std::is_same_v<T, Transform>)
@@ -2636,5 +2637,4 @@ inline void EventSystem::SetSelectedGameObject(GameObject value) const {
     CallExact<void>("SetSelectedGameObject", {"UnityEngine.GameObject"}, value);
 }
 
-
-}
+} // namespace URK::Unity

@@ -4,8 +4,8 @@
 
 #include "localization.h"
 #include "tabs/about_tab.h"
-#include "tabs/trainer_tab.h"
 #include "tabs/config_tab.h"
+#include "tabs/trainer_tab.h"
 #include "theme.h"
 #include "widgets.h"
 
@@ -17,7 +17,7 @@ enum class Tab {
 };
 
 inline Tab &active_tab() {
-    static Tab tab = Tab::Trainer;
+    static auto tab = Tab::Trainer;
     return tab;
 }
 
@@ -27,18 +27,20 @@ inline void initialize_style() {
 
 inline const char *active_tab_title() {
     switch (active_tab()) {
-    case Tab::Trainer:
-        return Localization::translate("menu.trainer");
-    case Tab::Config:
-        return Localization::translate("menu.config");
-    default:
-        return Localization::translate("menu.about");
+        case Tab::Trainer:
+            return Localization::translate("menu.trainer");
+        case Tab::Config:
+            return Localization::translate("menu.config");
+        default:
+            return Localization::translate("menu.about");
     }
 }
 
-// Once per session, until the menu is first opened; drawn without a window, so it takes no input.
+// Once per session, until the menu is first opened; drawn without a window, so
+// it takes no input.
 inline void render_menu_hint() {
-    // Time on screen; a frame's share is capped, so a loading stall does not use it up.
+    // Time on screen; a frame's share is capped, so a loading stall does not use
+    // it up.
     static float age = 0.0f;
     static bool done = false;
     if (done || ModConfig::menu_toggle_key == 0)
@@ -90,9 +92,9 @@ inline void render_menu() {
     if (size_scale > 1.35f)
         size_scale = 1.35f;
 
-    const ImVec2 base_window_size(640.0f, 330.0f);
-    const ImVec2 base_min_size(560.0f, 300.0f);
-    const ImVec2 base_max_size(900.0f, 680.0f);
+    constexpr ImVec2 base_window_size(640.0f, 330.0f);
+    constexpr ImVec2 base_min_size(560.0f, 300.0f);
+    constexpr ImVec2 base_max_size(900.0f, 680.0f);
 
     ImGui::SetNextWindowSize(ImVec2(base_window_size.x * size_scale, base_window_size.y * size_scale),
                              ImGuiCond_FirstUseEver);
@@ -100,8 +102,7 @@ inline void render_menu() {
                                         ImVec2(base_max_size.x * size_scale, base_max_size.y * size_scale));
     ImGuiWindowClass window_class{};
     window_class.ViewportFlagsOverrideSet =
-        ImGuiViewportFlags_NoFocusOnAppearing | ImGuiViewportFlags_NoFocusOnClick |
-        ImGuiViewportFlags_NoTaskBarIcon;
+        ImGuiViewportFlags_NoFocusOnAppearing | ImGuiViewportFlags_NoFocusOnClick | ImGuiViewportFlags_NoTaskBarIcon;
     ImGui::SetNextWindowClass(&window_class);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     if (!ImGui::Begin(ModConfig::display_name, &ModConfig::show_menu,
@@ -143,7 +144,7 @@ inline void render_menu() {
     ImGui::PopStyleColor();
 
     ImGui::SetCursorPos(ImVec2(12.0f, 44.0f));
-    const float nav_width = 0.0f;
+    constexpr float nav_width = 0.0f;
     if (Widgets::tab_button(Localization::translate("menu.trainer"), active_tab() == Tab::Trainer, nullptr, nav_width))
         active_tab() = Tab::Trainer;
     ImGui::SameLine(0.0f, sp.tab_gap);

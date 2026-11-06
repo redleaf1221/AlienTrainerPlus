@@ -9,9 +9,13 @@
 #endif
 
 extern "C" URK_EXPORT const URK_ModInfo *URKGetModInfo() {
-    static const URK_ModInfo info{
-        ModConfig::project_name, ModConfig::display_name, ModConfig::author,
-        ModConfig::version,      ModConfig::url,          ModConfig::description,
+    static constexpr URK_ModInfo info{
+        .projectName = ModConfig::project_name,
+        .displayName = ModConfig::display_name,
+        .author = ModConfig::author,
+        .version = ModConfig::version,
+        .url = ModConfig::url,
+        .description = ModConfig::description,
     };
     return &info;
 }

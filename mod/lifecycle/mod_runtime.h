@@ -1,6 +1,5 @@
 #pragma once
 
-#include "sdk/mod_async.h"
 #include "sdk/mod_sdk.h"
 
 namespace ModRuntime {

@@ -549,7 +549,7 @@ template <class Ret> Ret from_result(void *r) {
         return *static_cast<Ret *>(p);
     }
 }
-}
+} // namespace detail
 
 template <class Ret, class... Args> Ret Object::Call(std::string_view methodName, Args &&...args) const {
     detail::clear_error();
@@ -661,19 +661,19 @@ template <class T, class... ExtraArgs>
 std::vector<T> detail::FindObjectsUsing(TypeRef owner, std::string_view methodName, std::string_view image,
                                         std::string_view namespc, std::string_view className,
                                         ExtraArgs &&...extraArgs) {
-    auto rooted = FindObjectsUsingRooted<T>(owner, methodName, image, namespc, className,
-                                            std::forward<ExtraArgs>(extraArgs)...);
+    auto rooted =
+        FindObjectsUsingRooted<T>(owner, methodName, image, namespc, className, std::forward<ExtraArgs>(extraArgs)...);
     std::vector<T> out = std::move(rooted).copy_items();
     if (out.empty() && !fallback_error())
-        set_error(std::string("Unity object finding failed: no non-null instances found: ") + std::string(image) +
-                  ":" + std::string(namespc) + "." + std::string(className));
+        set_error(std::string("Unity object finding failed: no non-null instances found: ") + std::string(image) + ":" +
+                  std::string(namespc) + "." + std::string(className));
     return out;
 }
 
 template <class T, class... ExtraArgs>
-detail::RootedObjectArray<T>
-detail::FindObjectsUsingRooted(TypeRef owner, std::string_view methodName, std::string_view image,
-                               std::string_view namespc, std::string_view className, ExtraArgs &&...extraArgs) {
+detail::RootedObjectArray<T> detail::FindObjectsUsingRooted(TypeRef owner, std::string_view methodName,
+                                                            std::string_view image, std::string_view namespc,
+                                                            std::string_view className, ExtraArgs &&...extraArgs) {
     clear_error();
     TypeRef target{image, namespc, className};
     void *type = target.resolve_type_object();
@@ -692,8 +692,8 @@ detail::FindObjectsUsingRooted(TypeRef owner, std::string_view methodName, std::
         // FindObjectsSortMode. Retry newest-first so one generated SDK works on
         // every player instead of failing with "no overload matched".
         clear_error();
-        array = InvokeStatic<void *>(owner, "FindObjectsByType", TypeObject{type},
-                                     FindObjectsInactive::Exclude, FindObjectsSortMode::None);
+        array = InvokeStatic<void *>(owner, "FindObjectsByType", TypeObject{type}, FindObjectsInactive::Exclude,
+                                     FindObjectsSortMode::None);
         if (!array) {
             clear_error();
             array = InvokeStatic<void *>(owner, "FindObjectsByType", TypeObject{type}, FindObjectsSortMode::None);
@@ -845,8 +845,8 @@ Ret Object::CallExact(std::string_view methodName, const std::vector<const char 
     detail::clear_error();
     if (parameterTypeNames.size() != sizeof...(Args)) {
         detail::set_error(std::string("Unity Object::CallExact failed: argument count does not match ") +
-                          detail::signature_text(methodName, parameterTypeNames) + "; received=" +
-                          std::to_string(sizeof...(Args)));
+                          detail::signature_text(methodName, parameterTypeNames) +
+                          "; received=" + std::to_string(sizeof...(Args)));
         return detail::from_result<Ret>(nullptr);
     }
     auto pack = std::tuple<detail::Arg<std::remove_cvref_t<Args>>...>(
@@ -920,8 +920,7 @@ template <class T> void *reflection_argument(Arg<T> &argument) {
         return boxed;
     }
 }
-template <class Tuple>
-void *invoke_reflection_method(void *reflectionMethod, void *target, Tuple &arguments) {
+template <class Tuple> void *invoke_reflection_method(void *reflectionMethod, void *target, Tuple &arguments) {
     if (!reflectionMethod) {
         set_error("Unity reflection invocation failed: MethodInfo is null");
         return nullptr;
@@ -929,11 +928,7 @@ void *invoke_reflection_method(void *reflectionMethod, void *target, Tuple &argu
 
     std::vector<void *> values;
     values.reserve(std::tuple_size_v<std::remove_reference_t<Tuple>>);
-    std::apply(
-        [&](auto &...argument) {
-            (values.push_back(reflection_argument(argument)), ...);
-        },
-        arguments);
+    std::apply([&](auto &...argument) { (values.push_back(reflection_argument(argument)), ...); }, arguments);
     if (fallback_error())
         return nullptr;
 
@@ -951,7 +946,8 @@ void *invoke_reflection_method(void *reflectionMethod, void *target, Tuple &argu
 template <class Tuple>
 void *invoke_value_type_method(const void *method, const void *declaringClass, void *target, Tuple &arguments) {
     if (!method || !declaringClass || !target) {
-        set_error("Unity value-type invocation failed: method, declaring class, or target is null");
+        set_error("Unity value-type invocation failed: method, declaring class, or "
+                  "target is null");
         return nullptr;
     }
     void *reflectionMethod = Backend::method_get_object(method, declaringClass);
@@ -978,12 +974,14 @@ inline void *make_reflection_array(void *elementType, const std::vector<void *> 
         return nullptr;
     }
     if (!Backend::has_array_length() || !Backend::has_array_ref_at() || !Backend::has_array_set_ref()) {
-        set_error("Unity reflection array creation failed: required array APIs are unavailable");
+        set_error("Unity reflection array creation failed: required array APIs are "
+                  "unavailable");
         append_backend_error();
         return nullptr;
     }
     if (Backend::array_length(array) != values.size()) {
-        set_error("Unity reflection array creation failed: Array.CreateInstance returned an unexpected length");
+        set_error("Unity reflection array creation failed: Array.CreateInstance "
+                  "returned an unexpected length");
         return nullptr;
     }
     for (std::size_t i = 0; i < values.size(); ++i) {
@@ -994,7 +992,8 @@ inline void *make_reflection_array(void *elementType, const std::vector<void *> 
             return nullptr;
         }
         if (Backend::array_ref_at(array, i) != values[i]) {
-            set_error("Unity reflection array creation failed: written array element did not round-trip");
+            set_error("Unity reflection array creation failed: written array element "
+                      "did not round-trip");
             return nullptr;
         }
     }
@@ -1013,8 +1012,7 @@ struct ResolvedGenericMethod {
 };
 
 inline ResolvedGenericMethod find_generic_method(const void *klass, std::string_view methodName,
-                                                 std::size_t runtimeArgumentCount,
-                                                 std::size_t genericArgumentCount) {
+                                                 std::size_t runtimeArgumentCount, std::size_t genericArgumentCount) {
     if (!klass) {
         set_error("Unity generic method lookup failed: class is null");
         return {};
@@ -1068,7 +1066,7 @@ inline ResolvedGenericMethod find_generic_method(const void *klass, std::string_
               std::to_string(genericArgumentCount) + " generic argument(s): " + requestedName);
     return {};
 }
-}
+} // namespace detail
 inline GameObject GameObject::CreateUi(std::string_view name) {
     detail::clear_error();
     const void *gameObjectClass = GameObjectType.resolve_class();
@@ -1178,7 +1176,8 @@ Ret Object::InvokeGeneric(std::string_view methodName, const std::vector<TypeObj
     void *typeArray = resolved.genericParameterArray;
     if (!detail::Backend::has_array_length() || !detail::Backend::has_array_ref_at() ||
         !detail::Backend::has_array_set_ref() || detail::Backend::array_length(typeArray) != genericTypes.size()) {
-        detail::set_error("Unity Object::InvokeGeneric failed: generic parameter array is invalid");
+        detail::set_error("Unity Object::InvokeGeneric failed: generic parameter "
+                          "array is invalid");
         detail::append_backend_error();
         return detail::from_result<Ret>(nullptr);
     }
@@ -1186,7 +1185,8 @@ Ret Object::InvokeGeneric(std::string_view methodName, const std::vector<TypeObj
         void *typeObject = genericTypes[i].handle();
         if (!typeObject || !detail::Backend::array_set_ref(typeArray, i, typeObject) ||
             detail::Backend::array_ref_at(typeArray, i) != typeObject) {
-            detail::set_error("Unity Object::InvokeGeneric failed: could not prepare generic type argument array");
+            detail::set_error("Unity Object::InvokeGeneric failed: could not prepare "
+                              "generic type argument array");
             detail::append_backend_error();
             return detail::from_result<Ret>(nullptr);
         }
@@ -1268,9 +1268,10 @@ std::vector<T> Object::CallArrayExact(std::string_view methodName, const std::ve
                                       Args &&...args) const {
     detail::clear_error();
     if (parameterTypeNames.size() != sizeof...(Args)) {
-        detail::set_error(std::string("Unity Object::CallArrayExact failed: argument count does not match ") +
-                          detail::signature_text(methodName, parameterTypeNames) + "; received=" +
-                          std::to_string(sizeof...(Args)));
+        detail::set_error(std::string("Unity Object::CallArrayExact failed: "
+                                      "argument count does not match ") +
+                          detail::signature_text(methodName, parameterTypeNames) +
+                          "; received=" + std::to_string(sizeof...(Args)));
         return {};
     }
     auto pack = std::tuple<detail::Arg<std::remove_cvref_t<Args>>...>(
@@ -1289,18 +1290,19 @@ std::vector<T> Object::CallArrayExact(std::string_view methodName, const std::ve
     return CallArrayExact<T>(methodName, parameterTypeNames, argv.empty() ? nullptr : argv.data());
 }
 template <class T, class... Args>
-detail::RootedObjectArray<T>
-Object::CallArrayExactRooted(std::string_view methodName, const std::vector<const char *> &parameterTypeNames,
-                             Args &&...args) const {
+detail::RootedObjectArray<T> Object::CallArrayExactRooted(std::string_view methodName,
+                                                          const std::vector<const char *> &parameterTypeNames,
+                                                          Args &&...args) const {
     detail::clear_error();
     if (!handle_) {
         detail::set_error("Unity Object::CallArrayExactRooted failed: target object is null");
         return {};
     }
     if (parameterTypeNames.size() != sizeof...(Args)) {
-        detail::set_error(std::string("Unity Object::CallArrayExactRooted failed: argument count does not match ") +
-                          detail::signature_text(methodName, parameterTypeNames) + "; received=" +
-                          std::to_string(sizeof...(Args)));
+        detail::set_error(std::string("Unity Object::CallArrayExactRooted failed: "
+                                      "argument count does not match ") +
+                          detail::signature_text(methodName, parameterTypeNames) +
+                          "; received=" + std::to_string(sizeof...(Args)));
         return {};
     }
     const void *klass = detail::Backend::object_get_class(handle_);
@@ -1312,7 +1314,8 @@ Object::CallArrayExactRooted(std::string_view methodName, const std::vector<cons
     const void *method = detail::Backend::find_method_exact(klass, methodName, parameterTypeNames);
     if (!method) {
         const std::string lookupDetail = detail::fallback_error() ? detail::fallback_error() : "";
-        detail::set_error(std::string("Unity Object::CallArrayExactRooted failed: exact method not found: ") +
+        detail::set_error(std::string("Unity Object::CallArrayExactRooted failed: "
+                                      "exact method not found: ") +
                           detail::signature_text(methodName, parameterTypeNames) +
                           (lookupDetail.empty() ? std::string{} : std::string("; detail: ") + lookupDetail));
         detail::append_backend_error();
@@ -1324,10 +1327,12 @@ Object::CallArrayExactRooted(std::string_view methodName, const std::vector<cons
     std::array<void *, sizeof...(Args)> argv{};
     std::size_t index = 0;
     bool argsValid = true;
-    std::apply([&](auto &...argument) { ((argsValid = argsValid && argument.valid, argv[index++] = argument.ptr), ...); },
-               pack);
+    std::apply(
+        [&](auto &...argument) { ((argsValid = argsValid && argument.valid, argv[index++] = argument.ptr), ...); },
+        pack);
     if (!argsValid) {
-        detail::set_error(std::string("Unity Object::CallArrayExactRooted failed: managed argument allocation failed in ") +
+        detail::set_error(std::string("Unity Object::CallArrayExactRooted failed: "
+                                      "managed argument allocation failed in ") +
                           std::string(methodName));
         detail::append_backend_error();
         return {};
@@ -1337,7 +1342,8 @@ Object::CallArrayExactRooted(std::string_view methodName, const std::vector<cons
     void *exception = nullptr;
     if (!detail::Backend::runtime_invoke(method, handle_, argv.empty() ? nullptr : argv.data(), &array, &exception) ||
         exception) {
-        detail::set_error(std::string("Unity Object::CallArrayExactRooted failed: runtime_invoke exception in ") +
+        detail::set_error(std::string("Unity Object::CallArrayExactRooted failed: "
+                                      "runtime_invoke exception in ") +
                           detail::signature_text(methodName, parameterTypeNames));
         detail::append_backend_error();
         return {};
@@ -1346,8 +1352,8 @@ Object::CallArrayExactRooted(std::string_view methodName, const std::vector<cons
 }
 
 template <class T>
-detail::RootedObjectArray<T> detail::QueryComponentsRooted(const Object &target, TypeRef componentType,
-                                                           bool recursive, bool includeInactive, bool reverse) {
+detail::RootedObjectArray<T> detail::QueryComponentsRooted(const Object &target, TypeRef componentType, bool recursive,
+                                                           bool includeInactive, bool reverse) {
     clear_error();
     void *typeObject = componentType.resolve_type_object();
     if (!typeObject) {
@@ -1358,7 +1364,8 @@ detail::RootedObjectArray<T> detail::QueryComponentsRooted(const Object &target,
         return {};
     }
 
-    // Prefer the native-backed GetComponentsInternal; stripped wrappers may lack a body.
+    // Prefer the native-backed GetComponentsInternal; stripped wrappers may lack
+    // a body.
     auto result = target.CallArrayExactRooted<T>(
         "GetComponentsInternal",
         {"System.Type", "System.Boolean", "System.Boolean", "System.Boolean", "System.Boolean", "System.Object"},
@@ -1391,7 +1398,8 @@ detail::RootedObjectArray<T> detail::QueryComponentsRooted(const Object &target,
                 if (!result) {
                     const std::string explicitBooleanError =
                         fallback_error() ? fallback_error() : "two-parameter public component query failed";
-                    set_error("Unity component query failed through native and public paths; native: " +
+                    set_error("Unity component query failed through native and public "
+                              "paths; native: " +
                               internalError + "; public one-parameter: " + oneParameterError +
                               "; public explicit-boolean: " + explicitBooleanError);
                     return {};
@@ -1402,9 +1410,10 @@ detail::RootedObjectArray<T> detail::QueryComponentsRooted(const Object &target,
     if (result)
         return result;
 
-    const std::string publicError = fallback_error() ? fallback_error() : "public component query returned no rooted array";
-    set_error("Unity component query failed through native and public paths; native: " + internalError +
-              "; public " + publicMethod + ": " + publicError);
+    const std::string publicError =
+        fallback_error() ? fallback_error() : "public component query returned no rooted array";
+    set_error("Unity component query failed through native and public paths; native: " + internalError + "; public " +
+              publicMethod + ": " + publicError);
     return {};
 }
 inline std::vector<std::string> Object::CallStringArrayExact(
@@ -1482,4 +1491,4 @@ inline std::vector<std::string> Object::CallStringArrayExact(
     return out;
 }
 
-}
+} // namespace URK::Unity

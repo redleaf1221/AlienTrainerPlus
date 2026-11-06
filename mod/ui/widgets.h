@@ -143,7 +143,7 @@ inline bool checkbox(const char *label, bool *value) {
 
         const float mark_alpha = clamp01((checked_t - 0.28f) / 0.72f);
         const ImU32 mark_col = ImGui::GetColorU32(Theme::with_alpha(p.text_primary, mark_alpha));
-        const float thickness = 2.0f;
+        constexpr float thickness = 2.0f;
         const ImVec2 a(pos.x + square * 0.28f, pos.y + square * 0.53f);
         const ImVec2 b(pos.x + square * 0.43f, pos.y + square * 0.68f);
         const ImVec2 c(pos.x + square * 0.73f, pos.y + square * 0.34f);
@@ -165,7 +165,7 @@ inline bool button(const char *label, const ImVec2 &size = ImVec2(0.0f, 0.0f), b
 
     ImGui::PushID(text);
     const ImVec2 label_size = ImGui::CalcTextSize(text);
-    const ImVec2 padding(14.0f, 9.0f);
+    constexpr ImVec2 padding(14.0f, 9.0f);
     ImVec2 resolved_size(size.x > 0.0f ? size.x : label_size.x + padding.x * 2.0f,
                          size.y > 0.0f ? size.y : label_size.y + padding.y * 2.0f);
     const ImVec2 pos = ImGui::GetCursorScreenPos();
@@ -251,7 +251,7 @@ inline bool slider_float(const char *label, float *value, float min_value, float
     ImDrawList *dl = ImGui::GetWindowDrawList();
     const ImVec4 frame_col = mix3(p.surface_raised, p.surface_hover, p.surface_active, anim.hover, anim.active);
     const ImVec2 end(pos.x + width, pos.y + height);
-    const float track_h = 6.0f;
+    constexpr float track_h = 6.0f;
     const ImVec2 track_min(pos.x, pos.y + (height - track_h) * 0.5f);
     const ImVec2 track_max(end.x, track_min.y + track_h);
     dl->AddRectFilled(track_min, track_max, ImGui::GetColorU32(frame_col), Theme::radius().pill);
@@ -323,8 +323,8 @@ inline bool combo(const char *label, int *current, const char *const items[], in
     dl->AddText(ImVec2(pos.x + 12.0f, pos.y + (height - ImGui::GetTextLineHeight()) * 0.5f),
                 ImGui::GetColorU32(p.text_primary), preview);
 
-    const float arrow_w = 10.0f;
-    const float arrow_h = 6.0f;
+    constexpr float arrow_w = 10.0f;
+    constexpr float arrow_h = 6.0f;
     const ImVec2 arrow_center(end.x - 16.0f, pos.y + height * 0.5f + 1.0f);
     const ImU32 arrow_col = ImGui::GetColorU32(p.text_primary);
     dl->AddTriangleFilled(ImVec2(arrow_center.x - arrow_w * 0.5f, arrow_center.y - arrow_h * 0.5f),
@@ -366,9 +366,9 @@ inline bool toggle(const char *label, bool *value) {
     const char *text = label && label[0] ? label : "toggle";
     ImGui::PushID(text);
     const Theme::Palette &p = Theme::palette();
-    const float row_height = 30.0f;
-    const float track_w = 42.0f;
-    const float track_h = 22.0f;
+    constexpr float row_height = 30.0f;
+    constexpr float track_w = 42.0f;
+    constexpr float track_h = 22.0f;
     const float row_width = ImGui::GetContentRegionAvail().x;
     const ImVec2 pos = ImGui::GetCursorScreenPos();
     const ImGuiID id = ImGui::GetID("##toggle_row");
@@ -395,11 +395,11 @@ inline bool toggle(const char *label, bool *value) {
 
     const ImVec2 track_pos(pos.x, pos.y + (row_height - track_h) * 0.5f);
     const ImVec2 track_end(track_pos.x + track_w, track_pos.y + track_h);
-    const float rh = track_h * 0.5f;
+    constexpr float rh = track_h * 0.5f;
     const ImVec4 off_col = Theme::mix(p.surface_raised, p.surface_hover, anim.hover);
     const ImVec4 track_col = Theme::mix(off_col, p.toggle_on, ease_out_cubic(anim.checked));
     dl->AddRectFilled(track_pos, track_end, ImGui::GetColorU32(track_col), rh);
-    const float knob_r = rh - 3.0f;
+    constexpr float knob_r = rh - 3.0f;
     const float knob_x = track_pos.x + rh + ((track_w - track_h) * ease_out_cubic(anim.checked));
     const ImVec2 knob_c(knob_x, track_pos.y + rh);
     const float knob_scale = 1.0f - (ease_out_cubic(anim.active) * 0.06f);
@@ -467,7 +467,7 @@ inline void tab_indicator(const char *id_text, const ImVec2 &target_min, const I
     const float target_x = target_min.x + 14.0f;
     const float target_y = target_max.y - 4.0f;
     const float target_w = (target_max.x - target_min.x) - 28.0f;
-    const float target_h = 2.0f;
+    constexpr float target_h = 2.0f;
     if (!anim.initialized) {
         anim.x = target_x;
         anim.y = target_y;
@@ -488,21 +488,32 @@ inline void tab_indicator(const char *id_text, const ImVec2 &target_min, const I
 // A readable name for a virtual-key code; the code itself when there is none.
 inline std::string key_name(int vk) {
     if ((vk >= 'A' && vk <= 'Z') || (vk >= '0' && vk <= '9'))
-        return std::string(1, static_cast<char>(vk));
+        return {static_cast<char>(vk)};
     if (vk >= 0x70 && vk <= 0x87)
         return "F" + std::to_string(vk - 0x6F);
     switch (vk) {
-    case 0x09: return "Tab";
-    case 0x13: return "Pause";
-    case 0x21: return "Page Up";
-    case 0x22: return "Page Down";
-    case 0x23: return "End";
-    case 0x24: return "Home";
-    case 0x2D: return "Insert";
-    case 0x2E: return "Delete";
-    case 0x91: return "Scroll Lock";
-    case 0xC0: return "`";
-    default: break;
+        case 0x09:
+            return "Tab";
+        case 0x13:
+            return "Pause";
+        case 0x21:
+            return "Page Up";
+        case 0x22:
+            return "Page Down";
+        case 0x23:
+            return "End";
+        case 0x24:
+            return "Home";
+        case 0x2D:
+            return "Insert";
+        case 0x2E:
+            return "Delete";
+        case 0x91:
+            return "Scroll Lock";
+        case 0xC0:
+            return "`";
+        default:
+            break;
     }
     char code[8]{};
     std::snprintf(code, sizeof(code), "0x%02X", vk);
